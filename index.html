@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Houston TX - Investment Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; direction: ltr; }
+
+        /* Sidebar */
+        #sidebar {
+            width: 340px;
+            min-width: 340px;
+            background: #1a1a2e;
+            color: #eee;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        #sidebar-header {
+            padding: 24px 20px 16px;
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+            border-bottom: 2px solid #e94560;
+        }
+        #sidebar-header h1 {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        #sidebar-header p {
+            font-size: 12px;
+            color: #aaa;
+            direction: rtl;
+        }
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #e94560;
+            padding: 16px 20px 8px;
+            font-weight: 700;
+        }
+        .community-card {
+            padding: 14px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s;
+        }
+        .community-card:hover {
+            background: rgba(233, 69, 96, 0.1);
+        }
+        .community-card.active {
+            background: rgba(233, 69, 96, 0.2);
+            border-right: 3px solid #e94560;
+        }
+        .community-card h3 {
+            font-size: 15px;
+            color: #fff;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .community-card h3 .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .community-card .area {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 6px;
+        }
+        .community-card .details {
+            font-size: 12px;
+            color: #bbb;
+            line-height: 1.5;
+        }
+        .community-card .tag {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(233,69,96,0.2);
+            color: #e94560;
+            margin-top: 6px;
+            margin-left: 4px;
+        }
+        .landmark-item {
+            padding: 8px 20px;
+            font-size: 13px;
+            color: #aaa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .landmark-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .landmark-item .icon { font-size: 16px; width: 24px; text-align: center; }
+
+        /* Map */
+        #map { flex: 1; height: 100%; }
+
+        /* Custom popup */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .leaflet-popup-content {
+            margin: 0;
+            min-width: 260px;
+        }
+        .popup-header {
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 12px 12px 0 0;
+        }
+        .popup-header h3 { font-size: 16px; margin-bottom: 2px; }
+        .popup-header .sub { font-size: 12px; color: #aaa; }
+        .popup-body { padding: 12px 16px 14px; }
+        .popup-body p { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 8px; }
+        .popup-body .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .popup-body .info-row .label { color: #999; }
+        .popup-body .info-row .value { color: #333; font-weight: 600; }
+        .popup-body .lennar-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #0f3460;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .popup-body .lennar-link:hover { text-decoration: underline; }
+
+        /* Layer control */
+        .map-controls {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 999;
+            display: flex;
+            gap: 6px;
+        }
+        .map-btn {
+            padding: 8px 14px;
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+        .map-btn:hover { background: #f0f0f0; }
+        .map-btn.active { background: #0f3460; color: #fff; }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 24px;
+            right: 12px;
+            z-index: 999;
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            font-size: 12px;
+        }
+        .legend h4 { font-size: 13px; margin-bottom: 8px; color: #333; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; color: #555; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            #sidebar { width: 100%; min-width: unset; height: 40vh; order: 2; }
+            #map { height: 60vh; order: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <h1>Houston TX - Investment Map</h1>
+            <p>שכונות להשקעה באזור יוסטון, טקסס</p>
+        </div>
+
+        <div class="section-title">Target Communities</div>
+        <div id="community-list"></div>
+
+        <div class="section-title">Key Landmarks</div>
+        <div id="landmark-list"></div>
+    </div>
+
+    <div id="map" style="position: relative;">
+        <div class="map-controls">
+            <button class="map-btn active" onclick="setLayer('street')">Map</button>
+            <button class="map-btn" onclick="setLayer('satellite')">Satellite</button>
+        </div>
+        <div class="legend">
+            <h4>Legend</h4>
+            <div class="legend-item"><div class="legend-dot" style="background:#e94560"></div> Lennar Communities</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Key Landmarks</div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    // ========== DATA ==========
+    const communities = [
+        {
+            id: 'crosby',
+            name: 'Crosby',
+            nameHe: 'קרוסבי',
+            area: 'East Houston',
+            lat: 29.9119,
+            lng: -95.0624,
+            color: '#e94560',
+            builder: 'Lennar',
+            communities: 'Indian Springs, Sweetgrass Village, Newport Preserve, Crosby Farms',
+            priceRange: '$237K - $320K',
+            schoolDistrict: 'Crosby ISD',
+            description: 'מזרח יוסטון. קרבה לנמל יוסטון ו-Lake Houston. גישה נוחה ל-I-90 ולהרחבת Grand Parkway. מחירים אטרקטיביים עם פוטנציאל צמיחה גבוה.',
+            highlights: ['Lake Houston proximity', 'Grand Parkway expansion', 'Houston Ship Channel access'],
+            url: 'https://www.lennar.com/new-homes/texas/houston/crosby'
+        },
+        {
+            id: 'anniston',
+            name: 'Anniston',
+            nameHe: 'אניסטון',
+            area: 'Katy, West Houston',
+            lat: 29.8485,
+            lng: -95.8180,
+            color: '#f39c12',
+            builder: 'Lennar',
+            communities: 'Anniston (5 collections, 16 floor plans)',
+            priceRange: '$268K - $510K',
+            schoolDistrict: 'Katy ISD',
+            description: 'מערב יוסטון, באזור Katy. שכונה מתוכננת חדשה עם אגם, מרכז פנאי ובריכה. קרבה ל-SH-99 ו-I-10. בתי ספר מצוינים של Katy ISD.',
+            highlights: ['Katy ISD schools', 'Lake + recreation center', 'Near I-10 & SH-99'],
+            url: 'https://www.lennar.com/new-homes/texas/houston/katy/anniston'
+        },
+        {
+            id: 'sila',
+            name: 'Sila',
+            nameHe: 'סילה',
+            area: 'Huffman, NE Houston',
+            lat: 30.0455,
+            lng: -95.1080,
+            color: '#2ecc71',
+            builder: 'Lennar',
+            communities: 'Sila (Cottage, Wellton, Avante Collections)',
+            priceRange: '$250K - $380K',
+            schoolDistrict: 'Huffman ISD',
+            description: 'צפון-מזרח יוסטון, באזור Huffman. שכונה ביער עם שבילי הליכה, בריכה ומגרש פיקלבול. גישה נוחה ל-I-69.',
+            highlights: ['Wooded landscape', 'Pool + pickleball', 'Near I-69'],
+            url: 'https://www.lennar.com/new-homes/texas/houston/huffman/sila'
+        },
+        {
+            id: 'new-caney',
+            name: 'New Caney',
+            nameHe: 'ניו קייני',
+            area: 'North Houston',
+            lat: 30.1528,
+            lng: -95.1942,
+            color: '#9b59b6',
+            builder: 'Lennar',
+            communities: 'The Trails, Tavola, Tavola West, Pinewood at Grand Texas',
+            priceRange: '$230K - $350K',
+            schoolDistrict: 'New Caney ISD',
+            description: 'צפון יוסטון. מספר קהילות גדולות כולל Tavola (1,560 דונם). קרבה ל-Valley Ranch Town Center, Big Rivers Water Park ו-US-59.',
+            highlights: ['Tavola masterplan 1,560 acres', 'Valley Ranch Town Center', 'Grand Parkway access'],
+            url: 'https://www.lennar.com/new-homes/texas/houston/new-caney'
+        }
+    ];
+
+    const landmarks = [
+        { name: 'Downtown Houston', icon: '🏙️', lat: 29.7604, lng: -95.3698 },
+        { name: 'Texas Medical Center', icon: '🏥', lat: 29.7066, lng: -95.3975 },
+        { name: 'Energy Corridor', icon: '⚡', lat: 29.7724, lng: -95.5609 },
+        { name: 'NASA / Johnson Space Center', icon: '🚀', lat: 29.5519, lng: -95.0930 },
+        { name: 'The Woodlands', icon: '🌲', lat: 30.1658, lng: -95.4613 },
+        { name: 'Katy', icon: '📍', lat: 29.7858, lng: -95.8245 },
+        { name: 'Sugar Land', icon: '📍', lat: 29.6197, lng: -95.6349 },
+        { name: 'ExxonMobil Campus (Spring)', icon: '🏢', lat: 30.0667, lng: -95.3981 },
+        { name: 'IAH Airport', icon: '✈️', lat: 29.9902, lng: -95.3368 },
+        { name: 'Port of Houston', icon: '🚢', lat: 29.7372, lng: -95.0132 },
+    ];
+
+    // ========== MAP SETUP ==========
+    const map = L.map('map', {
+        center: [29.9, -95.25],
+        zoom: 10,
+        zoomControl: false
+    });
+
+    L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        maxZoom: 19
+    });
+
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; Esri',
+        maxZoom: 19
+    });
+
+    const labelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+    });
+
+    streetLayer.addTo(map);
+    let currentLayer = 'street';
+
+    function setLayer(type) {
+        document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+        if (type === 'satellite') {
+            map.removeLayer(streetLayer);
+            map.removeLayer(labelsLayer);
+            satelliteLayer.addTo(map);
+            labelsLayer.addTo(map);
+            document.querySelectorAll('.map-btn')[1].classList.add('active');
+        } else {
+            map.removeLayer(satelliteLayer);
+            map.removeLayer(labelsLayer);
+            streetLayer.addTo(map);
+            document.querySelectorAll('.map-btn')[0].classList.add('active');
+        }
+        currentLayer = type;
+    }
+
+    // ========== COMMUNITY MARKERS ==========
+    function createCommunityIcon(color) {
+        return L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="
+                width: 28px; height: 28px;
+                background: ${color};
+                border: 3px solid #fff;
+                border-radius: 50%;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                display: flex; align-items: center; justify-content: center;
+            "><div style="width:8px;height:8px;background:#fff;border-radius:50%;"></div></div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -16]
+        });
+    }
+
+    const communityMarkers = {};
+
+    communities.forEach(c => {
+        const marker = L.marker([c.lat, c.lng], { icon: createCommunityIcon(c.color) })
+            .addTo(map)
+            .bindPopup(`
+                <div class="popup-header">
+                    <h3>${c.name} ${c.nameHe ? '(' + c.nameHe + ')' : ''}</h3>
+                    <div class="sub">${c.area} · ${c.builder}</div>
+                </div>
+                <div class="popup-body">
+                    <p>${c.description}</p>
+                    <div class="info-row"><span class="label">Communities</span><span class="value">${c.communities}</span></div>
+                    <div class="info-row"><span class="label">Price Range</span><span class="value">${c.priceRange}</span></div>
+                    <div class="info-row"><span class="label">School District</span><span class="value">${c.schoolDistrict}</span></div>
+                    <div class="info-row"><span class="label">Highlights</span><span class="value">${c.highlights.join(', ')}</span></div>
+                    <a class="lennar-link" href="${c.url}" target="_blank">View on Lennar.com →</a>
+                </div>
+            `, { maxWidth: 320 });
+
+        communityMarkers[c.id] = marker;
+
+        // Add a subtle pulsing circle around the community
+        L.circle([c.lat, c.lng], {
+            radius: 3000,
+            color: c.color,
+            fillColor: c.color,
+            fillOpacity: 0.08,
+            weight: 1.5,
+            opacity: 0.4
+        }).addTo(map);
+    });
+
+    // ========== LANDMARK MARKERS ==========
+    function createLandmarkIcon() {
+        return L.divIcon({
+            className: 'landmark-marker',
+            html: `<div style="
+                width: 18px; height: 18px;
+                background: #3498db;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+                opacity: 0.8;
+            "></div>`,
+            iconSize: [18, 18],
+            iconAnchor: [9, 9],
+            popupAnchor: [0, -12]
+        });
+    }
+
+    landmarks.forEach(lm => {
+        L.marker([lm.lat, lm.lng], { icon: createLandmarkIcon() })
+            .addTo(map)
+            .bindPopup(`<div style="padding:8px;font-size:14px;font-weight:600;">${lm.icon} ${lm.name}</div>`, { maxWidth: 200 });
+    });
+
+    // ========== SIDEBAR - COMMUNITIES ==========
+    const listEl = document.getElementById('community-list');
+    communities.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'community-card';
+        card.dataset.id = c.id;
+        card.innerHTML = `
+            <h3><span class="dot" style="background:${c.color}"></span>${c.name}</h3>
+            <div class="area">${c.area} · ${c.schoolDistrict}</div>
+            <div class="details">${c.description.substring(0, 100)}...</div>
+            <span class="tag">${c.priceRange}</span>
+            <span class="tag">${c.builder}</span>
+        `;
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.community-card').forEach(el => el.classList.remove('active'));
+            card.classList.add('active');
+            map.flyTo([c.lat, c.lng], 13, { duration: 1 });
+            communityMarkers[c.id].openPopup();
+        });
+        listEl.appendChild(card);
+    });
+
+    // ========== SIDEBAR - LANDMARKS ==========
+    const lmListEl = document.getElementById('landmark-list');
+    landmarks.forEach(lm => {
+        const item = document.createElement('div');
+        item.className = 'landmark-item';
+        item.innerHTML = `<span class="icon">${lm.icon}</span>${lm.name}`;
+        item.addEventListener('click', () => {
+            map.flyTo([lm.lat, lm.lng], 13, { duration: 1 });
+        });
+        lmListEl.appendChild(item);
+    });
+    </script>
+</body>
+</html>
