@@ -245,36 +245,37 @@
             background: none;
             border: none;
             color: #fff;
-            font-size: 15px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: 900;
             white-space: nowrap;
-            text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.9);
-            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(0,0,0,1), 0 0 16px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
         }
 
         /* Houston city label */
         .houston-label {
             background: none;
             border: none;
-            color: rgba(233, 69, 96, 0.7);
-            font-size: 28px;
+            color: rgba(233, 69, 96, 0.85);
+            font-size: 44px;
             font-weight: 900;
             white-space: nowrap;
-            text-shadow: 0 0 8px rgba(0,0,0,0.5);
-            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(0,0,0,0.7), 0 0 24px rgba(0,0,0,0.4);
+            letter-spacing: 5px;
         }
 
         /* Employer name labels */
         .employer-label {
-            background: rgba(230, 126, 34, 0.9);
+            background: rgba(230, 126, 34, 0.95);
             border: none;
             color: #fff;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 800;
             white-space: nowrap;
-            padding: 2px 8px;
-            border-radius: 4px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            padding: 4px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            letter-spacing: 0.3px;
         }
 
         /* Ring labels */
@@ -316,18 +317,17 @@
             bottom: 24px;
             right: 12px;
             z-index: 999;
-            background: rgba(26, 26, 46, 0.88);
-            border-radius: 10px;
-            padding: 20px 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-            font-size: 18px;
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(26, 26, 46, 0.92);
+            border-radius: 14px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
         }
-        .legend h4 { font-size: 22px; margin-bottom: 14px; color: #eee; }
-        .legend-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; color: #ccc; font-size: 18px; }
-        .legend-dot { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        .legend-line { width: 30px; height: 0; border-top: 3px dashed; }
-        .legend-ring { width: 22px; height: 22px; border-radius: 50%; border: 2px dashed rgba(200,200,255,0.5); }
+        .legend h4 { font-size: 26px; margin-bottom: 18px; color: #fff; font-weight: 800; }
+        .legend-item { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; color: #ddd; font-size: 20px; font-weight: 600; }
+        .legend-dot { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+        .legend-line { width: 36px; height: 0; border-top: 3px dashed; }
+        .legend-ring { width: 26px; height: 26px; border-radius: 50%; border: 2px dashed rgba(200,200,255,0.5); }
 
         /* Mobile responsive */
         @media (max-width: 768px) {
@@ -602,12 +602,12 @@
     }).addTo(map);
 
     // Houston city label
-    L.marker([HOUSTON_CENTER[0] - 0.04, HOUSTON_CENTER[1]], {
+    L.marker([HOUSTON_CENTER[0] - 0.05, HOUSTON_CENTER[1]], {
         icon: L.divIcon({
             className: 'houston-label',
             html: 'HOUSTON · יוסטון',
-            iconSize: [260, 34],
-            iconAnchor: [130, 17]
+            iconSize: [420, 52],
+            iconAnchor: [210, 26]
         }),
         interactive: false
     }).addTo(map);
@@ -705,12 +705,12 @@
         communityMarkers[c.id] = marker;
 
         // Community name label above marker
-        L.marker([c.lat + 0.012, c.lng], {
+        L.marker([c.lat + 0.018, c.lng], {
             icon: L.divIcon({
                 className: 'community-label',
                 html: c.name,
-                iconSize: [120, 20],
-                iconAnchor: [60, 10]
+                iconSize: [200, 30],
+                iconAnchor: [100, 15]
             }),
             interactive: false
         }).addTo(map);
@@ -799,17 +799,17 @@
         return L.divIcon({
             className: 'employer-marker',
             html: `<div style="
-                width: 30px; height: 30px;
+                width: 42px; height: 42px;
                 background: #e67e22;
-                border: 2px solid #fff;
-                border-radius: 6px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+                border: 3px solid #fff;
+                border-radius: 8px;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.45);
                 display: flex; align-items: center; justify-content: center;
-                font-size: 16px;
+                font-size: 22px;
             ">${icon}</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -18]
+            iconSize: [42, 42],
+            iconAnchor: [21, 21],
+            popupAnchor: [0, -24]
         });
     }
 
@@ -827,12 +827,12 @@
             `, { maxWidth: 300 });
 
         // Employer name label on map
-        L.marker([emp.lat + 0.015, emp.lng], {
+        L.marker([emp.lat + 0.02, emp.lng], {
             icon: L.divIcon({
                 className: 'employer-label',
                 html: emp.name,
-                iconSize: [140, 20],
-                iconAnchor: [70, 10]
+                iconSize: [200, 28],
+                iconAnchor: [100, 14]
             }),
             interactive: false
         }).addTo(map);
