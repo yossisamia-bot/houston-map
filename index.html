@@ -404,8 +404,10 @@
             url: 'https://www.lennar.com/new-homes/texas/houston/crosby',
             driveTime: '~30 דקות',
             driveMinutes: 30,
-            aerialZoom: 15,
-            aerialNote: 'שכונות בהקמה באזור קרוסבי - ניתן לראות חלקות ובתים חדשים'
+            aerialLat: 29.9456,
+            aerialLng: -95.1066,
+            aerialZoom: 17,
+            aerialNote: 'שכונת Synova בקרוסבי - בתים חדשים בבנייה (Autumn Hts Ln)'
         },
         {
             id: 'anniston',
@@ -424,8 +426,10 @@
             url: 'https://www.lennar.com/new-homes/texas/houston/katy/anniston',
             driveTime: '~35 דקות',
             driveMinutes: 35,
-            aerialZoom: 15,
-            aerialNote: 'שכונת אניסטון בקייטי - פרויקט חדש עם אגם מרכזי ומתקני פנאי'
+            aerialLat: 29.8693,
+            aerialLng: -95.8357,
+            aerialZoom: 17,
+            aerialNote: 'שכונת Anniston בקייטי - בנייה חדשה באזור Harvest Wheat Ln'
         },
         {
             id: 'sila',
@@ -444,8 +448,10 @@
             url: 'https://www.lennar.com/new-homes/texas/houston/huffman/sila',
             driveTime: '~35 דקות',
             driveMinutes: 35,
-            aerialZoom: 15,
-            aerialNote: 'שכונת סילה בהאפמן - בנייה חדשה בתוך שטחי יער'
+            aerialLat: 30.1269,
+            aerialLng: -95.1176,
+            aerialZoom: 17,
+            aerialNote: 'שכונת Sila בהאפמן - בנייה חדשה בתוך שטחי יער (Prunella Ln)'
         },
         {
             id: 'new-caney',
@@ -464,8 +470,10 @@
             url: 'https://www.lennar.com/new-homes/texas/houston/new-caney',
             driveTime: '~40 דקות',
             driveMinutes: 40,
-            aerialZoom: 14,
-            aerialNote: 'אזור ניו קייני - מספר שכונות גדולות בשלבי בנייה שונים'
+            aerialLat: 30.1713,
+            aerialLng: -95.2178,
+            aerialZoom: 17,
+            aerialNote: 'שכונת Tavola West בניו קייני - בתים חדשים בבנייה (Via Aurelia Dr)'
         }
     ];
 
@@ -743,10 +751,14 @@
             aerialMap = null;
         }
 
+        // Use aerial-specific coordinates if available, otherwise fall back to main coords
+        const aLat = c.aerialLat || c.lat;
+        const aLng = c.aerialLng || c.lng;
+
         // Create mini satellite map
         setTimeout(() => {
             aerialMap = L.map('aerial-map', {
-                center: [c.lat, c.lng],
+                center: [aLat, aLng],
                 zoom: c.aerialZoom,
                 zoomControl: true
             });
@@ -761,12 +773,12 @@
                 maxZoom: 19
             }).addTo(aerialMap);
 
-            // Add marker
-            L.marker([c.lat, c.lng], { icon: createCommunityIcon(c.color) }).addTo(aerialMap);
+            // Add marker at the aerial coordinates
+            L.marker([aLat, aLng], { icon: createCommunityIcon(c.color) }).addTo(aerialMap);
 
-            // Add community radius
-            L.circle([c.lat, c.lng], {
-                radius: 2000,
+            // Add smaller radius for zoomed-in view
+            L.circle([aLat, aLng], {
+                radius: 500,
                 color: c.color,
                 fillColor: c.color,
                 fillOpacity: 0.1,
