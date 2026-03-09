@@ -334,8 +334,34 @@
             body { flex-direction: column; }
             #sidebar { width: 100%; min-width: unset; height: 40vh; order: 2; }
             #map { height: 60vh; order: 1; }
+
+            /* Legend - shrink to fit mobile */
+            .legend { padding: 12px 16px; bottom: 8px; right: 8px; border-radius: 10px; }
+            .legend h4 { font-size: 14px; margin-bottom: 8px; }
+            .legend-item { font-size: 12px; gap: 8px; margin-bottom: 6px; }
+            .legend-dot { width: 14px; height: 14px; }
+
+            /* Map labels - smaller for mobile */
+            .houston-label { font-size: 22px; letter-spacing: 2px; }
+            .community-label { font-size: 14px; }
+            .employer-label { font-size: 10px; padding: 2px 6px; }
+
+            /* Map controls */
+            .map-btn { padding: 5px 10px; font-size: 11px; }
+            .map-controls { top: 8px; right: 8px; gap: 4px; }
+
+            /* Sidebar compact */
+            #sidebar-header { padding: 16px 14px 10px; }
+            #sidebar-header h1 { font-size: 16px; }
+            .community-card { padding: 10px 14px; }
+            .community-card h3 { font-size: 13px; }
+            .community-card .area, .community-card .details { font-size: 11px; }
+
+            /* Aerial modal */
             .aerial-modal { width: 95vw; }
-            #aerial-map { height: 300px; }
+            .aerial-modal-header h3 { font-size: 13px; }
+            #aerial-map { height: 280px; }
+            .aerial-modal-footer { font-size: 11px; padding: 8px 12px; }
         }
     </style>
 </head>
