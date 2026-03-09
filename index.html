@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Houston TX - Investment Map</title>
+    <title>מפת השקעות - יוסטון, טקסס</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,11 +37,12 @@
         }
         .section-title {
             font-size: 11px;
-            text-transform: uppercase;
             letter-spacing: 1.5px;
             color: #e94560;
             padding: 16px 20px 8px;
             font-weight: 700;
+            direction: rtl;
+            text-align: right;
         }
         .community-card {
             padding: 14px 20px;
@@ -75,11 +76,15 @@
             font-size: 12px;
             color: #999;
             margin-bottom: 6px;
+            direction: rtl;
+            text-align: right;
         }
         .community-card .details {
             font-size: 12px;
             color: #bbb;
             line-height: 1.5;
+            direction: rtl;
+            text-align: right;
         }
         .community-card .tag {
             display: inline-block;
@@ -125,7 +130,7 @@
         .popup-header h3 { font-size: 16px; margin-bottom: 2px; }
         .popup-header .sub { font-size: 12px; color: #aaa; }
         .popup-body { padding: 12px 16px 14px; }
-        .popup-body p { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 8px; }
+        .popup-body p { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 8px; direction: rtl; text-align: right; }
         .popup-body .info-row {
             display: flex;
             justify-content: space-between;
@@ -133,8 +138,8 @@
             padding: 4px 0;
             border-bottom: 1px solid #f0f0f0;
         }
-        .popup-body .info-row .label { color: #999; }
-        .popup-body .info-row .value { color: #333; font-weight: 600; }
+        .popup-body .info-row .label { color: #999; direction: rtl; }
+        .popup-body .info-row .value { color: #333; font-weight: 600; direction: rtl; text-align: left; }
         .popup-body .lennar-link {
             display: inline-block;
             margin-top: 8px;
@@ -194,26 +199,26 @@
 <body>
     <div id="sidebar">
         <div id="sidebar-header">
-            <h1>Houston TX - Investment Map</h1>
-            <p>שכונות להשקעה באזור יוסטון, טקסס</p>
+            <h1>מפת השקעות - יוסטון TX</h1>
+            <p>שכונות Lennar להשקעה באזור יוסטון, טקסס</p>
         </div>
 
-        <div class="section-title">Target Communities</div>
+        <div class="section-title">שכונות יעד</div>
         <div id="community-list"></div>
 
-        <div class="section-title">Key Landmarks</div>
+        <div class="section-title">ציוני דרך</div>
         <div id="landmark-list"></div>
     </div>
 
     <div id="map" style="position: relative;">
         <div class="map-controls">
-            <button class="map-btn active" onclick="setLayer('street')">Map</button>
-            <button class="map-btn" onclick="setLayer('satellite')">Satellite</button>
+            <button class="map-btn active" onclick="setLayer('street')">מפה</button>
+            <button class="map-btn" onclick="setLayer('satellite')">לוויין</button>
         </div>
         <div class="legend">
-            <h4>Legend</h4>
-            <div class="legend-item"><div class="legend-dot" style="background:#e94560"></div> Lennar Communities</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Key Landmarks</div>
+            <h4>מקרא</h4>
+            <div class="legend-item"><div class="legend-dot" style="background:#e94560"></div> שכונות Lennar</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> ציוני דרך</div>
         </div>
     </div>
 
@@ -225,7 +230,7 @@
             id: 'crosby',
             name: 'Crosby',
             nameHe: 'קרוסבי',
-            area: 'East Houston',
+            area: 'מזרח יוסטון',
             lat: 29.9119,
             lng: -95.0624,
             color: '#e94560',
@@ -234,14 +239,14 @@
             priceRange: '$237K - $320K',
             schoolDistrict: 'Crosby ISD',
             description: 'מזרח יוסטון. קרבה לנמל יוסטון ו-Lake Houston. גישה נוחה ל-I-90 ולהרחבת Grand Parkway. מחירים אטרקטיביים עם פוטנציאל צמיחה גבוה.',
-            highlights: ['Lake Houston proximity', 'Grand Parkway expansion', 'Houston Ship Channel access'],
+            highlights: ['קרבה ל-Lake Houston', 'הרחבת Grand Parkway', 'גישה לנמל יוסטון'],
             url: 'https://www.lennar.com/new-homes/texas/houston/crosby'
         },
         {
             id: 'anniston',
             name: 'Anniston',
             nameHe: 'אניסטון',
-            area: 'Katy, West Houston',
+            area: 'קייטי, מערב יוסטון',
             lat: 29.8485,
             lng: -95.8180,
             color: '#f39c12',
@@ -250,14 +255,14 @@
             priceRange: '$268K - $510K',
             schoolDistrict: 'Katy ISD',
             description: 'מערב יוסטון, באזור Katy. שכונה מתוכננת חדשה עם אגם, מרכז פנאי ובריכה. קרבה ל-SH-99 ו-I-10. בתי ספר מצוינים של Katy ISD.',
-            highlights: ['Katy ISD schools', 'Lake + recreation center', 'Near I-10 & SH-99'],
+            highlights: ['בתי ספר Katy ISD', 'אגם + מרכז פנאי', 'קרבה ל-I-10 ו-SH-99'],
             url: 'https://www.lennar.com/new-homes/texas/houston/katy/anniston'
         },
         {
             id: 'sila',
             name: 'Sila',
             nameHe: 'סילה',
-            area: 'Huffman, NE Houston',
+            area: 'האפמן, צפון-מזרח יוסטון',
             lat: 30.0455,
             lng: -95.1080,
             color: '#2ecc71',
@@ -266,14 +271,14 @@
             priceRange: '$250K - $380K',
             schoolDistrict: 'Huffman ISD',
             description: 'צפון-מזרח יוסטון, באזור Huffman. שכונה ביער עם שבילי הליכה, בריכה ומגרש פיקלבול. גישה נוחה ל-I-69.',
-            highlights: ['Wooded landscape', 'Pool + pickleball', 'Near I-69'],
+            highlights: ['נוף יער', 'בריכה + פיקלבול', 'קרבה ל-I-69'],
             url: 'https://www.lennar.com/new-homes/texas/houston/huffman/sila'
         },
         {
             id: 'new-caney',
             name: 'New Caney',
             nameHe: 'ניו קייני',
-            area: 'North Houston',
+            area: 'צפון יוסטון',
             lat: 30.1528,
             lng: -95.1942,
             color: '#9b59b6',
@@ -282,22 +287,22 @@
             priceRange: '$230K - $350K',
             schoolDistrict: 'New Caney ISD',
             description: 'צפון יוסטון. מספר קהילות גדולות כולל Tavola (1,560 דונם). קרבה ל-Valley Ranch Town Center, Big Rivers Water Park ו-US-59.',
-            highlights: ['Tavola masterplan 1,560 acres', 'Valley Ranch Town Center', 'Grand Parkway access'],
+            highlights: ['תכנית Tavola - 1,560 דונם', 'Valley Ranch Town Center', 'גישה ל-Grand Parkway'],
             url: 'https://www.lennar.com/new-homes/texas/houston/new-caney'
         }
     ];
 
     const landmarks = [
-        { name: 'Downtown Houston', icon: '🏙️', lat: 29.7604, lng: -95.3698 },
-        { name: 'Texas Medical Center', icon: '🏥', lat: 29.7066, lng: -95.3975 },
-        { name: 'Energy Corridor', icon: '⚡', lat: 29.7724, lng: -95.5609 },
-        { name: 'NASA / Johnson Space Center', icon: '🚀', lat: 29.5519, lng: -95.0930 },
+        { name: 'מרכז יוסטון (Downtown)', icon: '🏙️', lat: 29.7604, lng: -95.3698 },
+        { name: 'המרכז הרפואי של טקסס', icon: '🏥', lat: 29.7066, lng: -95.3975 },
+        { name: 'מסדרון האנרגיה', icon: '⚡', lat: 29.7724, lng: -95.5609 },
+        { name: 'NASA / מרכז החלל ג\'ונסון', icon: '🚀', lat: 29.5519, lng: -95.0930 },
         { name: 'The Woodlands', icon: '🌲', lat: 30.1658, lng: -95.4613 },
-        { name: 'Katy', icon: '📍', lat: 29.7858, lng: -95.8245 },
+        { name: 'Katy (קייטי)', icon: '📍', lat: 29.7858, lng: -95.8245 },
         { name: 'Sugar Land', icon: '📍', lat: 29.6197, lng: -95.6349 },
-        { name: 'ExxonMobil Campus (Spring)', icon: '🏢', lat: 30.0667, lng: -95.3981 },
-        { name: 'IAH Airport', icon: '✈️', lat: 29.9902, lng: -95.3368 },
-        { name: 'Port of Houston', icon: '🚢', lat: 29.7372, lng: -95.0132 },
+        { name: 'קמפוס ExxonMobil (ספרינג)', icon: '🏢', lat: 30.0667, lng: -95.3981 },
+        { name: 'נמל תעופה IAH', icon: '✈️', lat: 29.9902, lng: -95.3368 },
+        { name: 'נמל יוסטון', icon: '🚢', lat: 29.7372, lng: -95.0132 },
     ];
 
     // ========== MAP SETUP ==========
@@ -373,11 +378,11 @@
                 </div>
                 <div class="popup-body">
                     <p>${c.description}</p>
-                    <div class="info-row"><span class="label">Communities</span><span class="value">${c.communities}</span></div>
-                    <div class="info-row"><span class="label">Price Range</span><span class="value">${c.priceRange}</span></div>
-                    <div class="info-row"><span class="label">School District</span><span class="value">${c.schoolDistrict}</span></div>
-                    <div class="info-row"><span class="label">Highlights</span><span class="value">${c.highlights.join(', ')}</span></div>
-                    <a class="lennar-link" href="${c.url}" target="_blank">View on Lennar.com →</a>
+                    <div class="info-row"><span class="label">שכונות</span><span class="value">${c.communities}</span></div>
+                    <div class="info-row"><span class="label">טווח מחירים</span><span class="value">${c.priceRange}</span></div>
+                    <div class="info-row"><span class="label">מחוז בתי ספר</span><span class="value">${c.schoolDistrict}</span></div>
+                    <div class="info-row"><span class="label">נקודות עניין</span><span class="value">${c.highlights.join(', ')}</span></div>
+                    <a class="lennar-link" href="${c.url}" target="_blank">צפה ב-Lennar.com ←</a>
                 </div>
             `, { maxWidth: 320 });
 
