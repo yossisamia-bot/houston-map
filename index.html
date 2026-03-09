@@ -244,7 +244,7 @@
         .ring-label {
             background: none;
             border: none;
-            color: rgba(200, 200, 255, 0.45);
+            color: rgba(15, 52, 96, 0.45);
             font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
@@ -279,18 +279,18 @@
             bottom: 24px;
             right: 12px;
             z-index: 999;
-            background: rgba(26, 26, 46, 0.92);
+            background: rgba(26, 26, 46, 0.88);
             border-radius: 10px;
             padding: 12px 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
             font-size: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.08);
         }
         .legend h4 { font-size: 13px; margin-bottom: 8px; color: #eee; }
-        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; color: #bbb; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; color: #ccc; }
         .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .legend-line { width: 20px; height: 0; border-top: 2px dashed; }
-        .legend-ring { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed rgba(200,200,255,0.4); }
+        .legend-ring { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed rgba(200,200,255,0.5); }
 
         /* Mobile responsive */
         @media (max-width: 768px) {
@@ -515,7 +515,7 @@
 
     L.control.zoom({ position: 'topleft' }).addTo(map);
 
-    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO',
         maxZoom: 19
     });
@@ -569,7 +569,7 @@
     ringDistances.forEach(ring => {
         L.circle(HOUSTON_CENTER, {
             radius: ring.radius,
-            color: 'rgba(200, 200, 255, 0.25)',
+            color: 'rgba(15, 52, 96, 0.25)',
             fillColor: 'transparent',
             fillOpacity: 0,
             weight: 1.5,
