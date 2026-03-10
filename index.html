@@ -257,13 +257,14 @@
             background: rgba(230, 126, 34, 0.95);
             border: none;
             color: #fff;
-            font-size: 16px;
-            font-weight: 800;
-            white-space: nowrap;
-            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: normal;
+            text-align: center;
+            padding: 4px 10px;
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            letter-spacing: 0.3px;
+            line-height: 1.3;
         }
 
         /* Ring labels */
@@ -307,7 +308,7 @@
 
             /* Map labels - smaller for mobile */
             .community-label { font-size: 14px; }
-            .employer-label { font-size: 10px; padding: 2px 6px; }
+            .employer-label { font-size: 9px; padding: 2px 6px; }
 
             /* Map controls */
             .map-btn { padding: 5px 10px; font-size: 11px; }
@@ -457,6 +458,50 @@
             aerialLng: -95.2178,
             aerialZoom: 17,
             aerialNote: 'שכונת Tavola West בניו קייני - בתים חדשים בבנייה (Via Aurelia Dr)'
+        },
+        {
+            id: 'hockley',
+            name: 'Hockley',
+            nameHe: 'הוקלי',
+            area: 'מערב-צפון יוסטון',
+            lat: 30.07,
+            lng: -95.87,
+            color: '#1abc9c',
+            builder: 'Lennar',
+            communities: 'The Grand Prairie (The Highlands), Cypress Green, Dellrose',
+            priceRange: '$246K - $427K',
+            schoolDistrict: 'Waller ISD',
+            description: 'מערב-צפון יוסטון. The Grand Prairie - קהילה מתוכננת על 1,730 דונם עם אגם 70 דונם, בריכות ומתקני פנאי. קרבה ל-US-290 ו-Grand Parkway.',
+            highlights: ['אגם 70 דונם', 'מתחם פנאי Starlight', 'קרבה ל-US-290'],
+            url: 'https://www.lennar.com/new-homes/texas/houston/hockley',
+            driveTime: '~40 דקות',
+            driveMinutes: 40,
+            aerialLat: 30.07,
+            aerialLng: -95.87,
+            aerialZoom: 16,
+            aerialNote: 'שכונת The Grand Prairie בהוקלי - קהילה חדשה עם אגם מרכזי'
+        },
+        {
+            id: 'lago-mar',
+            name: 'Lago Mar',
+            nameHe: 'לאגו מאר',
+            area: 'טקסס סיטי, דרום יוסטון',
+            lat: 29.375,
+            lng: -94.985,
+            color: '#3498db',
+            builder: 'Lennar + 13 בונים',
+            communities: 'Lago Mar (מספר שכונות ובונים)',
+            priceRange: '$260K - $510K',
+            schoolDistrict: 'Dickinson ISD',
+            description: 'דרום יוסטון, ליד טקסס סיטי. קהילה על 2,033 דונם עם לגונה קריסטלית של 12 דונם, חוף חול לבן, מסעדה ומועדון. 4,500 בתים מתוכננים.',
+            highlights: ['לגונה קריסטלית 12 דונם', 'מועדון + בריכת אינפיניטי', 'קרבה לגלווסטון'],
+            url: 'https://lagomarintexascity.com/',
+            driveTime: '~45 דקות',
+            driveMinutes: 45,
+            aerialLat: 29.375,
+            aerialLng: -94.985,
+            aerialZoom: 15,
+            aerialNote: 'לאגו מאר בטקסס סיטי - קהילה עם לגונה קריסטלית ענקית'
         }
     ];
 
@@ -468,6 +513,7 @@
             icon: '🍎',
             lat: 29.870,
             lng: -95.545,
+            employees: '~5,000',
             desc: 'מפעל ייצור שרתי AI ו-Mac Mini של Apple. 500,000 רגל רבוע, אלפי עובדים. השקעה של $600B בארה"ב.',
             type: 'טכנולוגיה'
         },
@@ -477,6 +523,7 @@
             icon: '💻',
             lat: 30.017,
             lng: -95.461,
+            employees: '~4,000',
             desc: 'מטה עולמי של Hewlett Packard Enterprise. עבר מסיליקון ואלי ב-2022. קמפוס 440,000 רגל רבוע ב-Springwoods Village.',
             type: 'טכנולוגיה'
         },
@@ -486,6 +533,7 @@
             icon: '🛢️',
             lat: 30.0667,
             lng: -95.3981,
+            employees: '10,000+',
             desc: 'מטה ExxonMobil בספרינג. אחת מחברות האנרגיה הגדולות בעולם. 10,000+ עובדים באתר.',
             type: 'אנרגיה'
         },
@@ -495,6 +543,7 @@
             icon: '⚡',
             lat: 29.7724,
             lng: -95.5609,
+            employees: '90,000+',
             desc: 'ריכוז מטות של BP, Shell, ConocoPhillips, Phillips 66 ועוד. מעל 90,000 עובדים באזור.',
             type: 'אנרגיה'
         },
@@ -504,6 +553,7 @@
             icon: '🏭',
             lat: 29.737,
             lng: -95.013,
+            employees: '100,000+',
             desc: 'אזור תעשייה פטרוכימי עצום. 44% מכלל ייצור הפטרוכימיה בארה"ב. מאות מפעלים.',
             type: 'תעשייה'
         },
@@ -513,15 +563,17 @@
             icon: '🏥',
             lat: 29.7066,
             lng: -95.3975,
+            employees: '106,000+',
             desc: 'המרכז הרפואי הגדול בעולם. 106,000+ עובדים. כולל 60 מוסדות רפואיים.',
             type: 'רפואה'
         },
         {
-            name: 'NASA Johnson Space Center',
+            name: 'NASA JSC',
             nameHe: 'מרכז החלל ג\'ונסון - NASA',
             icon: '🚀',
             lat: 29.5519,
             lng: -95.0930,
+            employees: '10,000+',
             desc: 'מרכז החלל של NASA ביוסטון. מרכז הפיקוד על טיסות חלל מאוישות. 10,000+ עובדים, כולל מהנדסים ומדענים.',
             type: 'חלל ומחקר'
         },
@@ -531,8 +583,19 @@
             icon: '✈️',
             lat: 29.9902,
             lng: -95.3368,
+            employees: '40,000+',
             desc: 'נמל התעופה הבינלאומי ג\'ורג\' בוש (IAH). שער כניסה עיקרי ליוסטון עם 40M+ נוסעים בשנה. מעסיק 40,000+ עובדים.',
             type: 'תחבורה'
+        },
+        {
+            name: 'Univ. of Houston',
+            nameHe: 'אוניברסיטת יוסטון',
+            icon: '🎓',
+            lat: 29.7199,
+            lng: -95.3422,
+            employees: '46,000+',
+            desc: 'אוניברסיטת יוסטון - מהאוניברסיטאות הגדולות בטקסס. 46,000+ סטודנטים ו-6,000+ עובדים. קמפוס ענק עם מרכזי מחקר מתקדמים.',
+            type: 'השכלה גבוהה'
         },
     ];
 
@@ -823,13 +886,16 @@
                 </div>
             `, { maxWidth: 300 });
 
-        // Employer name label on map
+        // Employer name label on map (two-line: name + employee count)
+        const labelHtml = emp.employees
+            ? `${emp.name}<br><span style="font-size:10px;font-weight:400;opacity:0.85">(${emp.employees} עובדים)</span>`
+            : emp.name;
         L.marker([emp.lat + 0.02, emp.lng], {
             icon: L.divIcon({
                 className: 'employer-label',
-                html: emp.name,
-                iconSize: [200, 28],
-                iconAnchor: [100, 14]
+                html: labelHtml,
+                iconSize: [160, 44],
+                iconAnchor: [80, 22]
             }),
             interactive: false
         }).addTo(map);
