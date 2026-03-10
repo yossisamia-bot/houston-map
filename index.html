@@ -252,18 +252,6 @@
             letter-spacing: 1px;
         }
 
-        /* Houston city label */
-        .houston-label {
-            background: none;
-            border: none;
-            color: rgba(233, 69, 96, 0.85);
-            font-size: 44px;
-            font-weight: 900;
-            white-space: nowrap;
-            text-shadow: 0 0 12px rgba(0,0,0,0.7), 0 0 24px rgba(0,0,0,0.4);
-            letter-spacing: 5px;
-        }
-
         /* Employer name labels */
         .employer-label {
             background: rgba(230, 126, 34, 0.95);
@@ -311,38 +299,13 @@
         .map-btn:hover { background: rgba(40, 40, 70, 0.9); color: #fff; }
         .map-btn.active { background: #e94560; color: #fff; border-color: #e94560; }
 
-        /* Legend */
-        .legend {
-            position: absolute;
-            bottom: 24px;
-            right: 12px;
-            z-index: 999;
-            background: rgba(26, 26, 46, 0.92);
-            border-radius: 14px;
-            padding: 28px 32px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .legend h4 { font-size: 26px; margin-bottom: 18px; color: #fff; font-weight: 800; }
-        .legend-item { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; color: #ddd; font-size: 20px; font-weight: 600; }
-        .legend-dot { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
-        .legend-line { width: 36px; height: 0; border-top: 3px dashed; }
-        .legend-ring { width: 26px; height: 26px; border-radius: 50%; border: 2px dashed rgba(200,200,255,0.5); }
-
         /* Mobile responsive */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             #sidebar { width: 100%; min-width: unset; height: 40vh; order: 2; }
             #map { height: 60vh; order: 1; }
 
-            /* Legend - shrink to fit mobile */
-            .legend { padding: 12px 16px; bottom: 8px; right: 8px; border-radius: 10px; }
-            .legend h4 { font-size: 14px; margin-bottom: 8px; }
-            .legend-item { font-size: 12px; gap: 8px; margin-bottom: 6px; }
-            .legend-dot { width: 14px; height: 14px; }
-
             /* Map labels - smaller for mobile */
-            .houston-label { font-size: 22px; letter-spacing: 2px; }
             .community-label { font-size: 14px; }
             .employer-label { font-size: 10px; padding: 2px 6px; }
 
@@ -386,12 +349,6 @@
         <div class="map-controls">
             <button class="map-btn active" onclick="setLayer('street')">מפה</button>
             <button class="map-btn" onclick="setLayer('satellite')">לוויין</button>
-        </div>
-        <div class="legend">
-            <h4>מקרא</h4>
-            <div class="legend-item"><div class="legend-dot" style="background:#e94560"></div> שכונות Lennar</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div> מעסיקים ותעשייה</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> ציוני דרך</div>
         </div>
     </div>
 
@@ -559,15 +516,28 @@
             desc: 'המרכז הרפואי הגדול בעולם. 106,000+ עובדים. כולל 60 מוסדות רפואיים.',
             type: 'רפואה'
         },
+        {
+            name: 'NASA Johnson Space Center',
+            nameHe: 'מרכז החלל ג\'ונסון - NASA',
+            icon: '🚀',
+            lat: 29.5519,
+            lng: -95.0930,
+            desc: 'מרכז החלל של NASA ביוסטון. מרכז הפיקוד על טיסות חלל מאוישות. 10,000+ עובדים, כולל מהנדסים ומדענים.',
+            type: 'חלל ומחקר'
+        },
+        {
+            name: 'IAH Airport',
+            nameHe: 'נמל תעופה בינלאומי IAH',
+            icon: '✈️',
+            lat: 29.9902,
+            lng: -95.3368,
+            desc: 'נמל התעופה הבינלאומי ג\'ורג\' בוש (IAH). שער כניסה עיקרי ליוסטון עם 40M+ נוסעים בשנה. מעסיק 40,000+ עובדים.',
+            type: 'תחבורה'
+        },
     ];
 
     const landmarks = [
         { name: 'מרכז יוסטון (Downtown)', icon: '🏙️', lat: 29.7604, lng: -95.3698 },
-        { name: 'NASA / מרכז החלל ג\'ונסון', icon: '🚀', lat: 29.5519, lng: -95.0930 },
-        { name: 'The Woodlands', icon: '🌲', lat: 30.1658, lng: -95.4613 },
-        { name: 'Katy (קייטי)', icon: '📍', lat: 29.7858, lng: -95.8245 },
-        { name: 'Sugar Land', icon: '📍', lat: 29.6197, lng: -95.6349 },
-        { name: 'נמל תעופה IAH', icon: '✈️', lat: 29.9902, lng: -95.3368 },
     ];
 
     // ========== MAP SETUP ==========
@@ -633,17 +603,6 @@
         fillOpacity: 0.08,
         weight: 2,
         opacity: 0.5
-    }).addTo(map);
-
-    // Houston city label
-    L.marker([HOUSTON_CENTER[0] - 0.05, HOUSTON_CENTER[1]], {
-        icon: L.divIcon({
-            className: 'houston-label',
-            html: 'HOUSTON · יוסטון',
-            iconSize: [420, 52],
-            iconAnchor: [210, 26]
-        }),
-        interactive: false
     }).addTo(map);
 
     ringDistances.forEach(ring => {
