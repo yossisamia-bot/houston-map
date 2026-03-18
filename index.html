@@ -342,6 +342,9 @@
         <div class="section-title">מעסיקים ותעשייה</div>
         <div id="employer-list"></div>
 
+        <div class="section-title">🚧 פרויקטים עתידיים</div>
+        <div id="future-list"></div>
+
         <div class="section-title">ציוני דרך</div>
         <div id="landmark-list"></div>
     </div>
@@ -597,6 +600,32 @@
             desc: 'אוניברסיטת יוסטון - מהאוניברסיטאות הגדולות בטקסס. 46,000+ סטודנטים ו-6,000+ עובדים. קמפוס ענק עם מרכזי מחקר מתקדמים.',
             type: 'השכלה גבוהה'
         },
+    ];
+
+    // ========== FUTURE DEVELOPMENTS ==========
+    const futureDevelopments = [
+        {
+            name: 'Toro District',
+            nameHe: 'מתחם טורו - מטה Houston Texans',
+            icon: '🏈',
+            lat: 29.9295,
+            lng: -95.6920,
+            status: 'בתכנון · פתיחה 2029',
+            cost: '$34B השפעה כלכלית',
+            desc: 'מטה עולמי חדש של Houston Texans על 83 אקר ב-Bridgeland. כולל אצטדיון מקורה 16,000 מושבים, 3 מגרשי אימון NFL, קמעונאות, מלונות ובילוי. 17,000 משרות חדשות. שותפות עם Harris County ו-Howard Hughes.',
+            highlights: ['אצטדיון מקורה 150,000 sqft', '175,000 sqft משרדים', '61 אקר מסחרי', '6 פארקים + 5,000 חניות']
+        },
+        {
+            name: 'Convention District',
+            nameHe: 'מתחם הכנסים - הרחבת GRB',
+            icon: '🏗️',
+            lat: 29.7520,
+            lng: -95.3555,
+            status: 'בבנייה · שלב 1 נפתח 2028',
+            cost: '$2B · $20B השפעה ב-30 שנה',
+            desc: 'הרחבת מרכז הכנסים George R. Brown ב-700,000 sqft. אולם האירועים הגדול בטקסס, פלאזה 100,000 sqft, קמעונאות ומסעדות. 60 בלוקים של פיתוח מעורב - מגורים, מלונות, בילוי. קו רכבת קלה עתידי.',
+            highlights: ['700,000 sqft הרחבה', 'האולם הגדול בטקסס', 'FIFA 2026 + RNC 2028', 'קו מטרו חדש מזרח-מערב']
+        }
     ];
 
     const landmarks = [
@@ -958,6 +987,52 @@
             map.flyTo([emp.lat, emp.lng], 13, { duration: 1 });
         });
         empListEl.appendChild(item);
+    });
+
+    // ========== MAP - FUTURE DEVELOPMENTS ==========
+    futureDevelopments.forEach(fd => {
+        const fdIcon = L.divIcon({
+            className: 'employer-icon',
+            html: `<div style="font-size:22px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));animation:pulse 2s infinite">${fd.icon}</div>`,
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+        L.marker([fd.lat, fd.lng], { icon: fdIcon })
+            .addTo(map)
+            .bindPopup(`
+                <div class="popup-header" style="background:linear-gradient(135deg, #8e44ad, #6c3483);">
+                    <h3>${fd.icon} ${fd.name}</h3>
+                    <div class="sub">${fd.nameHe}</div>
+                </div>
+                <div class="popup-body">
+                    <div style="margin-bottom:8px"><strong>${fd.status}</strong> · ${fd.cost}</div>
+                    <p>${fd.desc}</p>
+                    <div style="margin-top:8px">${fd.highlights.map(h => `<span style="display:inline-block;background:#8e44ad22;color:#8e44ad;padding:2px 8px;border-radius:10px;font-size:11px;margin:2px">${h}</span>`).join('')}</div>
+                </div>
+            `, { maxWidth: 350 });
+
+        // Label on map
+        L.marker([fd.lat, fd.lng], {
+            icon: L.divIcon({
+                className: 'employer-label',
+                html: `<div style="white-space:nowrap;font-size:12px;font-weight:700;color:#8e44ad;text-shadow:1px 1px 3px #fff,-1px -1px 3px #fff,1px -1px 3px #fff,-1px 1px 3px #fff;pointer-events:none">${fd.name}<br><span style="font-size:10px;font-weight:400;opacity:0.85">${fd.status.split('·')[0].trim()}</span></div>`,
+                iconSize: [120, 30],
+                iconAnchor: [60, -12]
+            })
+        }).addTo(map);
+    });
+
+    // ========== SIDEBAR - FUTURE DEVELOPMENTS ==========
+    const fdListEl = document.getElementById('future-list');
+    futureDevelopments.forEach(fd => {
+        const item = document.createElement('div');
+        item.className = 'landmark-item';
+        item.style.cssText = 'cursor:pointer;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,0.05);';
+        item.innerHTML = `<span class="icon">${fd.icon}</span><span style="direction:rtl">${fd.nameHe}</span>`;
+        item.addEventListener('click', () => {
+            map.flyTo([fd.lat, fd.lng], 14, { duration: 1 });
+        });
+        fdListEl.appendChild(item);
     });
 
     // ========== SIDEBAR - LANDMARKS ==========
