@@ -524,55 +524,9 @@
             .search-results { width: 280px; max-width: calc(100vw - 40px); }
             .sv-map-btn { width: 38px; height: 38px; font-size: 18px; bottom: 24px; }
         }
-        /* Password screen */
-        #auth-screen {
-            position: fixed; inset: 0; z-index: 99999;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column; gap: 18px;
-        }
-        #auth-screen h2 { color: #fff; font-size: 22px; }
-        #auth-screen input {
-            padding: 12px 18px; font-size: 20px; border-radius: 10px; border: 2px solid #e94560;
-            text-align: center; width: 180px; letter-spacing: 8px; background: rgba(255,255,255,0.95);
-            outline: none;
-        }
-        #auth-screen input:focus { border-color: #f39c12; box-shadow: 0 0 15px rgba(243,156,18,0.4); }
-        #auth-screen .auth-err { color: #e94560; font-size: 13px; min-height: 18px; }
-        #auth-screen button {
-            padding: 10px 36px; font-size: 16px; border: none; border-radius: 8px;
-            background: #e94560; color: #fff; cursor: pointer; font-weight: 600;
-        }
-        #auth-screen button:hover { background: #d63851; }
     </style>
 </head>
 <body>
-    <!-- Password screen -->
-    <div id="auth-screen">
-        <h2>🔒</h2>
-        <input type="password" id="auth-input" maxlength="4" placeholder="••••" autofocus
-               onkeydown="if(event.key==='Enter')checkAuth()">
-        <button onclick="checkAuth()">כניסה</button>
-        <div class="auth-err" id="auth-err"></div>
-    </div>
-    <script>
-    function checkAuth() {
-        if (document.getElementById('auth-input').value === '2002') {
-            document.getElementById('auth-screen').style.display = 'none';
-            sessionStorage.setItem('hmap_ok','1');
-        } else {
-            document.getElementById('auth-err').textContent = 'סיסמא שגויה';
-            document.getElementById('auth-input').value = '';
-            document.getElementById('auth-input').focus();
-        }
-    }
-    if (sessionStorage.getItem('hmap_ok') === '1') {
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('auth-screen').style.display = 'none';
-        });
-    }
-    </script>
-
     <div id="map" style="position: relative; width: 100%; height: 100vh;">
         <div class="map-controls">
             <button class="map-btn active" onclick="setLayer('street')">מפה</button>
