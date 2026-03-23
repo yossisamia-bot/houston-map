@@ -362,6 +362,139 @@
             font-size: 13px;
         }
 
+        /* Search bar */
+        .search-container {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+            overflow: hidden;
+            width: 360px;
+            max-width: calc(100vw - 200px);
+            transition: box-shadow 0.2s;
+        }
+        .search-container:focus-within {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        }
+        .search-container input {
+            border: none;
+            outline: none;
+            padding: 10px 14px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: ltr;
+        }
+        .search-container input::placeholder { color: #aaa; }
+        .search-container .search-btn {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+        .search-container .search-btn:hover { color: #0f3460; }
+        .search-container .search-clear {
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #999;
+            display: none;
+        }
+        .search-container .search-clear.visible { display: block; }
+        .search-results {
+            position: absolute;
+            top: 46px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 998;
+            width: 360px;
+            max-width: calc(100vw - 200px);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .search-results.active { display: block; }
+        .search-result-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:hover { background: #f5f5f5; }
+        .search-result-item .result-icon { font-size: 16px; flex-shrink: 0; }
+        .search-result-item .result-text { flex: 1; min-width: 0; }
+        .search-result-item .result-name { font-weight: 600; }
+        .search-result-item .result-detail { font-size: 11px; color: #888; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-result-item .sv-mini {
+            font-size: 11px;
+            background: #f39c12;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        /* Street view button on map */
+        .sv-map-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 12px;
+            z-index: 999;
+            background: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .sv-map-btn:hover { transform: scale(1.1); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        .sv-map-btn.active { background: #f39c12; color: #fff; }
+
+        .sv-tooltip {
+            position: absolute;
+            bottom: 80px;
+            right: 8px;
+            z-index: 999;
+            background: rgba(26,26,46,0.9);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            display: none;
+            direction: rtl;
+        }
+        .sv-tooltip.active { display: block; }
+
         /* Mobile responsive */
         @media (max-width: 768px) {
             body { flex-direction: column; }
@@ -384,6 +517,12 @@
             /* Resources panel mobile */
             #resources-panel { width: 100vw; max-width: 100vw; left: -105vw; }
             #resources-btn { bottom: 16px; left: 16px; width: 46px; height: 46px; font-size: 20px; }
+
+            /* Search bar mobile */
+            .search-container { width: 240px; max-width: calc(100vw - 160px); }
+            .search-container input { padding: 8px 10px; font-size: 12px; }
+            .search-results { width: 280px; max-width: calc(100vw - 40px); }
+            .sv-map-btn { width: 38px; height: 38px; font-size: 18px; bottom: 24px; }
         }
     </style>
 </head>
@@ -393,6 +532,19 @@
             <button class="map-btn active" onclick="setLayer('street')">מפה</button>
             <button class="map-btn" onclick="setLayer('satellite')">לוויין</button>
         </div>
+
+        <!-- Search bar -->
+        <div class="search-container">
+            <button class="search-btn" onclick="doSearch()" title="Search">🔍</button>
+            <input type="text" id="searchInput" placeholder="Search address or street..." autocomplete="off"
+                   onkeydown="if(event.key==='Enter')doSearch()" oninput="onSearchInput()">
+            <button class="search-clear" id="searchClear" onclick="clearSearch()">&times;</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+
+        <!-- Street View button -->
+        <button class="sv-map-btn" id="svBtn" onclick="toggleStreetViewMode()" title="Street View">🚶</button>
+        <div class="sv-tooltip" id="svTooltip">לחץ על המפה לפתיחת Street View</div>
     </div>
 
     <!-- Resources Button & Panel -->
@@ -1138,6 +1290,147 @@
     }
 
     renderResources();
+
+    // ========== SEARCH ==========
+    let searchMarker = null;
+    let searchTimeout = null;
+
+    function onSearchInput() {
+        const val = document.getElementById('searchInput').value;
+        document.getElementById('searchClear').classList.toggle('visible', val.length > 0);
+        // Live search after 400ms pause
+        clearTimeout(searchTimeout);
+        if (val.length >= 3) {
+            searchTimeout = setTimeout(() => doSearch(), 400);
+        } else {
+            document.getElementById('searchResults').classList.remove('active');
+        }
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchClear').classList.remove('visible');
+        document.getElementById('searchResults').classList.remove('active');
+        if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
+    }
+
+    async function doSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) return;
+
+        const resultsEl = document.getElementById('searchResults');
+        resultsEl.innerHTML = '<div style="padding:12px;text-align:center;color:#888;font-size:13px;">🔍 Searching...</div>';
+        resultsEl.classList.add('active');
+
+        try {
+            // Search near Houston area
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Houston, TX')}&limit=6&addressdetails=1&viewbox=-96.0,-95.0,29.5,30.3&bounded=0`;
+            const resp = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+            const data = await resp.json();
+
+            if (data.length === 0) {
+                resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:#888;font-size:13px;">No results found</div>';
+                return;
+            }
+
+            resultsEl.innerHTML = data.map((item, i) => {
+                const name = item.display_name.split(',').slice(0, 3).join(', ');
+                const type = item.type || '';
+                return `<div class="search-result-item" onclick="goToResult(${item.lat}, ${item.lon}, '${item.display_name.replace(/'/g, "\\'")}')">
+                    <span class="result-icon">📍</span>
+                    <div class="result-text">
+                        <div class="result-name">${name}</div>
+                        <div class="result-detail">${type}</div>
+                    </div>
+                    <span class="sv-mini" onclick="event.stopPropagation();openSV(${item.lat},${item.lon})">SV</span>
+                </div>`;
+            }).join('');
+        } catch (err) {
+            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:#c0392b;font-size:13px;">Search error. Try again.</div>';
+        }
+    }
+
+    function goToResult(lat, lng, name) {
+        document.getElementById('searchResults').classList.remove('active');
+
+        if (searchMarker) map.removeLayer(searchMarker);
+
+        map.flyTo([lat, lng], 16, { duration: 1 });
+
+        searchMarker = L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: '',
+                html: `<div style="
+                    width:32px;height:32px;background:#e94560;border:3px solid #fff;
+                    border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,0.4);
+                    display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;
+                ">📍</div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -18]
+            })
+        }).addTo(map);
+
+        const shortName = name.split(',').slice(0, 2).join(', ');
+        searchMarker.bindPopup(`
+            <div class="popup-header" style="background:linear-gradient(135deg,#e94560,#c0392b);">
+                <h3>📍 ${shortName}</h3>
+            </div>
+            <div class="popup-body" style="text-align:center;padding:12px;">
+                <button onclick="openSV(${lat},${lng})" style="
+                    background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;
+                    border:none;padding:8px 18px;border-radius:8px;cursor:pointer;
+                    font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+                ">🚶 Street View</button>
+                <button onclick="openGoogleMaps(${lat},${lng})" style="
+                    background:linear-gradient(135deg,#16213e,#0f3460);color:#fff;
+                    border:none;padding:8px 18px;border-radius:8px;cursor:pointer;
+                    font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+                    margin-top:6px;
+                ">🗺️ Google Maps</button>
+            </div>
+        `, { maxWidth: 260 }).openPopup();
+    }
+
+    // ========== STREET VIEW ==========
+    function openSV(lat, lng) {
+        window.open(`https://www.google.com/maps/@${lat},${lng},3a,75y,0h,90t/data=!3m6!1e1!3m4!1s!2e0!7i16384!8i8192`, '_blank');
+    }
+
+    function openGoogleMaps(lat, lng) {
+        window.open(`https://www.google.com/maps/@${lat},${lng},17z`, '_blank');
+    }
+
+    // Street View click mode
+    let svMode = false;
+    function toggleStreetViewMode() {
+        svMode = !svMode;
+        document.getElementById('svBtn').classList.toggle('active', svMode);
+        document.getElementById('svTooltip').classList.toggle('active', svMode);
+        document.getElementById('map').style.cursor = svMode ? 'crosshair' : '';
+
+        if (svMode) {
+            // Auto-hide tooltip after 3s
+            setTimeout(() => {
+                document.getElementById('svTooltip').classList.remove('active');
+            }, 3000);
+        }
+    }
+
+    map.on('click', function(e) {
+        if (svMode) {
+            openSV(e.latlng.lat, e.latlng.lng);
+            // Don't exit mode - user might want to click multiple spots
+        }
+    });
+
+    // Close search results when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-container') && !e.target.closest('.search-results')) {
+            document.getElementById('searchResults').classList.remove('active');
+        }
+    });
+
     </script>
 </body>
 </html>
