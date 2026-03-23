@@ -599,7 +599,7 @@
         {
             name: 'Energy Corridor',
             nameHe: 'מסדרון האנרגיה',
-            icon: '⚡',
+            icon: '',
             lat: 29.7724,
             lng: -95.5609,
             employees: '90,000+',
@@ -609,7 +609,7 @@
         {
             name: 'Ship Channel',
             nameHe: 'תעלת הספנות / פטרוכימיה',
-            icon: '🏭',
+            icon: '',
             lat: 29.737,
             lng: -95.013,
             employees: '100,000+',
@@ -965,17 +965,20 @@
     }
 
     employers.forEach(emp => {
-        L.marker([emp.lat, emp.lng], { icon: createEmployerIcon(emp) })
-            .addTo(map)
-            .bindPopup(`
-                <div class="popup-header" style="background:linear-gradient(135deg, #e67e22, #d35400);">
-                    <h3>${emp.logo ? `<img src="${emp.logo}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px;border-radius:3px">` : emp.icon} ${emp.name}</h3>
-                    <div class="sub">${emp.nameHe} · ${emp.type}</div>
-                </div>
-                <div class="popup-body">
-                    <p>${emp.desc}</p>
-                </div>
+        const hasIcon = emp.logo || emp.icon;
+        if (hasIcon) {
+            L.marker([emp.lat, emp.lng], { icon: createEmployerIcon(emp) })
+                .addTo(map)
+                .bindPopup(`
+                    <div class="popup-header" style="background:linear-gradient(135deg, #e67e22, #d35400);">
+                        <h3>${emp.logo ? `<img src="${emp.logo}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px;border-radius:3px">` : emp.icon} ${emp.name}</h3>
+                        <div class="sub">${emp.nameHe} · ${emp.type}</div>
+                    </div>
+                    <div class="popup-body">
+                        <p>${emp.desc}</p>
+                    </div>
             `, { maxWidth: 300 });
+        }
 
         // Compact square-ish label: name + employees
         const labelHtml = emp.employees
