@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מפת השקעות - יוסטון, טקסס</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S1E7F8WCWF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-S1E7F8WCWF');
+    </script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -876,6 +884,7 @@
     let currentLayer = 'street';
 
     function setLayer(type) {
+        gtag('event', 'map_layer_switch', { layer_type: type });
         document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
         if (type === 'satellite') {
             map.removeLayer(streetLayer);
@@ -1001,6 +1010,10 @@
 
         communityMarkers[c.id] = marker;
 
+        marker.on('click', () => {
+            gtag('event', 'community_click', { community_name: c.name, community_id: c.id, area: c.area });
+        });
+
         // Community name label above marker
         L.marker([c.lat + 0.018, c.lng], {
             icon: L.divIcon({
@@ -1029,6 +1042,7 @@
     function openAerial(communityId) {
         const c = communities.find(x => x.id === communityId);
         if (!c) return;
+        gtag('event', 'aerial_view', { community_name: c.name, community_id: communityId });
 
         document.getElementById('aerialTitle').textContent = `📸 ${c.name} (${c.nameHe}) - תצוגת לוויין`;
         document.getElementById('aerialFooter').textContent = c.aerialNote;
@@ -1280,6 +1294,7 @@
         const panel = document.getElementById('resources-panel');
         const overlay = document.getElementById('resources-overlay');
         const isOpen = panel.classList.contains('open');
+        if (!isOpen) gtag('event', 'resources_open');
         if (isOpen) {
             panel.classList.remove('open');
             overlay.classList.remove('active');
@@ -1317,6 +1332,7 @@
     async function doSearch() {
         const query = document.getElementById('searchInput').value.trim();
         if (!query) return;
+        gtag('event', 'map_search', { search_term: query });
 
         const resultsEl = document.getElementById('searchResults');
         resultsEl.innerHTML = '<div style="padding:12px;text-align:center;color:#888;font-size:13px;">🔍 Searching...</div>';
@@ -1405,6 +1421,7 @@
     let svMode = false;
     function toggleStreetViewMode() {
         svMode = !svMode;
+        if (svMode) gtag('event', 'streetview_toggle');
         document.getElementById('svBtn').classList.toggle('active', svMode);
         document.getElementById('svTooltip').classList.toggle('active', svMode);
         document.getElementById('map').style.cursor = svMode ? 'crosshair' : '';
