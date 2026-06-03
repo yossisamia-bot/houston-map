@@ -1,0 +1,5 @@
+# Local Claude Code config (machine-specific, not for the repo)
+.claude/
+
+# Junk file created by an accidental shell redirect to the Windows 'nul' device
+nul
