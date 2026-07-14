@@ -186,8 +186,11 @@
             right: 12px;
             z-index: 999;
             display: flex;
+            flex-direction: column;
+            align-items: flex-end;
             gap: 6px;
         }
+        .basemap-btns { display: flex; gap: 6px; }
         .map-btn {
             padding: 8px 14px;
             background: rgba(26, 26, 46, 0.85);
@@ -201,6 +204,127 @@
         }
         .map-btn:hover { background: rgba(40, 40, 70, 0.9); color: #fff; }
         .map-btn.active { background: #e94560; color: #fff; border-color: #e94560; }
+
+        /* Layers panel - what is shown on the map */
+        #layersToggleBtn { display: none; }
+        .layers-panel {
+            background: rgba(26, 26, 46, 0.92);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 10px 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            direction: rtl;
+            color: #ddd;
+            font-size: 13px;
+            min-width: 186px;
+        }
+        .layers-panel .lp-title {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .layers-panel label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 4px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .layers-panel label:hover { color: #fff; }
+        .layers-panel input { accent-color: #e94560; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+        .layers-panel .lp-hint {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+        }
+
+        /* Status badge for under-construction / future sites */
+        .status-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 8px;
+            background: #f39c12;
+            color: #fff;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        /* "Jobs nearby" block inside community popup */
+        .popup-jobs {
+            margin-top: 10px;
+            background: #f4f7fb;
+            border-radius: 8px;
+            padding: 8px 10px;
+            direction: rtl;
+        }
+        .popup-jobs .pj-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f3460;
+            margin-bottom: 4px;
+        }
+        .popup-jobs .pj-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 12px;
+            padding: 3px 0;
+            border-bottom: 1px solid #e6ebf2;
+            color: #444;
+        }
+        .popup-jobs .pj-row:last-child { border-bottom: none; }
+        .popup-jobs .pj-row .pj-name { font-weight: 600; flex: 1; }
+        .popup-jobs .pj-row .pj-jobs { color: #666; white-space: nowrap; }
+        .popup-jobs .pj-row .pj-min { color: #999; white-space: nowrap; font-size: 11px; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* First-visit hint */
+        #welcomeHint {
+            position: absolute;
+            bottom: 34px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.94);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            direction: rtl;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: calc(100vw - 40px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        #welcomeHint.show { opacity: 1; pointer-events: auto; }
+        #welcomeHint button {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 2px;
+        }
+        #welcomeHint button:hover { color: #fff; }
+        @media (max-width: 768px) {
+            #welcomeHint { font-size: 11px; bottom: 76px; padding: 8px 14px; }
+        }
 
         /* Resources Panel */
         #resources-btn {
@@ -516,6 +640,11 @@
             .map-btn { padding: 5px 10px; font-size: 11px; }
             .map-controls { top: 8px; right: 8px; gap: 4px; }
 
+            /* Layers panel collapses behind a button on mobile */
+            #layersToggleBtn { display: inline-block; }
+            .layers-panel { display: none; }
+            .layers-panel.open { display: block; }
+
             /* Aerial modal */
             .aerial-modal { width: 95vw; }
             .aerial-modal-header h3 { font-size: 13px; }
@@ -537,8 +666,25 @@
 <body>
     <div id="map" style="position: relative; width: 100%; height: 100vh;">
         <div class="map-controls">
-            <button class="map-btn active" onclick="setLayer('street')">מפה</button>
-            <button class="map-btn" onclick="setLayer('satellite')">לוויין</button>
+            <div class="basemap-btns">
+                <button class="map-btn active" id="btnStreet" onclick="setLayer('street')">מפה</button>
+                <button class="map-btn" id="btnSatellite" onclick="setLayer('satellite')">לוויין</button>
+                <button class="map-btn" id="layersToggleBtn" onclick="toggleLayersPanel()">🗂️ שכבות</button>
+            </div>
+            <div class="layers-panel" id="layersPanel">
+                <div class="lp-title">מה מוצג במפה</div>
+                <label><input type="checkbox" id="lyr-communities" checked onchange="applyLayers()"> 🏘️ קהילות להשקעה</label>
+                <label><input type="checkbox" id="lyr-employers" checked onchange="applyLayers()"> 💼 מרכזי תעסוקה</label>
+                <label><input type="checkbox" id="lyr-future" checked onchange="applyLayers()"> 🏗️ פרויקטים עתידיים</label>
+                <label><input type="checkbox" id="lyr-drive" onchange="applyLayers()"> 🚗 מרחק ממרכז יוסטון</label>
+                <div class="lp-hint">💡 מתקרבים במפה - נחשפים מעסיקים ופרויקטים נוספים</div>
+            </div>
+        </div>
+
+        <!-- First-visit hint -->
+        <div id="welcomeHint">
+            <span>🖱️ כל נקודה במפה נפתחת בלחיצה - קהילות להשקעה, מעסיקים גדולים ופרויקטים עתידיים</span>
+            <button onclick="dismissWelcome()" title="סגור">&times;</button>
         </div>
 
         <!-- Search bar -->
@@ -607,7 +753,12 @@
             aerialLat: 29.9456,
             aerialLng: -95.1066,
             aerialZoom: 17,
-            aerialNote: 'שכונת Synova בקרוסבי - בתים חדשים בבנייה (Autumn Hts Ln)'
+            aerialNote: 'שכונת Synova בקרוסבי - בתים חדשים בבנייה (Autumn Hts Ln)',
+            jobAnchors: [
+                { name: 'ExxonMobil Baytown', jobs: '~7,000 עובדים', min: '~20 דק\'' },
+                { name: 'Generation Park', jobs: 'צומח - Eli Lilly', min: '~20 דק\'' },
+                { name: 'תעלת הספנות (פטרוכימיה)', jobs: 'עשרות אלפים', min: '~25 דק\'' }
+            ]
         },
         {
             id: 'anniston',
@@ -629,7 +780,12 @@
             aerialLat: 29.8693,
             aerialLng: -95.8357,
             aerialZoom: 17,
-            aerialNote: 'שכונת Anniston בקייטי - בנייה חדשה באזור Harvest Wheat Ln'
+            aerialNote: 'שכונת Anniston בקייטי - בנייה חדשה באזור Harvest Wheat Ln',
+            jobAnchors: [
+                { name: 'מסדרון האנרגיה (BP, Shell...)', jobs: '~73,000 עובדים', min: '~20 דק\'' },
+                { name: 'Katy ISD - בתי הספר', jobs: '~14,000 עובדים', min: 'בתוך המחוז' },
+                { name: 'מרכז רפואי Katy I-10', jobs: '~4,500 עובדים', min: '~20 דק\'' }
+            ]
         },
         {
             id: 'sila',
@@ -651,7 +807,12 @@
             aerialLat: 30.1269,
             aerialLng: -95.1176,
             aerialZoom: 17,
-            aerialNote: 'שכונת Sila בהאפמן - בנייה חדשה בתוך שטחי יער (Prunella Ln)'
+            aerialNote: 'שכונת Sila בהאפמן - בנייה חדשה בתוך שטחי יער (Prunella Ln)',
+            jobAnchors: [
+                { name: 'Generation Park', jobs: 'צומח - Eli Lilly', min: '~20-25 דק\'' },
+                { name: 'נמל תעופה IAH', jobs: '~27,500 עובדים', min: '~30 דק\'' },
+                { name: 'בתי החולים של Kingwood', jobs: 'רפואה', min: '~15 דק\'' }
+            ]
         },
         {
             id: 'new-caney',
@@ -673,7 +834,12 @@
             aerialLat: 30.1713,
             aerialLng: -95.2178,
             aerialZoom: 17,
-            aerialNote: 'שכונת Tavola West בניו קייני - בתים חדשים בבנייה (Via Aurelia Dr)'
+            aerialNote: 'שכונת Tavola West בניו קייני - בתים חדשים בבנייה (Via Aurelia Dr)',
+            jobAnchors: [
+                { name: 'Valley Ranch Town Center', jobs: 'מסחר ושירותים', min: '~5-8 דק\'' },
+                { name: 'Walmart DC + פארק תעשייה', jobs: '~1,400 עובדים', min: '~10 דק\'' },
+                { name: 'The Woodlands', jobs: '~40,000 עובדים', min: '~25 דק\'' }
+            ]
         },
         {
             id: 'hockley',
@@ -695,7 +861,12 @@
             aerialLat: 30.0076,
             aerialLng: -95.8519,
             aerialZoom: 16,
-            aerialNote: 'שכונת The Grand Prairie בהוקלי - קהילה חדשה עם אגם מרכזי (Verbena Glen Dr)'
+            aerialNote: 'שכונת The Grand Prairie בהוקלי - קהילה חדשה עם אגם מרכזי (Verbena Glen Dr)',
+            jobAnchors: [
+                { name: 'מפעל Daikin (מיזוג אוויר)', jobs: '~10,000 עובדים', min: '~10 דק\'' },
+                { name: 'Cy-Fair ISD + קולג\'', jobs: '~16,400 עובדים', min: '~20 דק\'' },
+                { name: 'Tesla Megafactory', jobs: 'בהקמה - 1,500 עד 2028', min: '~20 דק\'' }
+            ]
         },
         {
             id: 'lago-mar',
@@ -717,64 +888,31 @@
             aerialLat: 29.4120,
             aerialLng: -95.0627,
             aerialZoom: 15,
-            aerialNote: 'לאגו מאר בטקסס סיטי - קהילה עם לגונה קריסטלית ענקית (Lago Costa Dr)'
+            aerialNote: 'לאגו מאר בטקסס סיטי - קהילה עם לגונה קריסטלית ענקית (Lago Costa Dr)',
+            jobAnchors: [
+                { name: 'תעשיית Texas City (Marathon)', jobs: 'אלפי עובדים וקבלנים', min: '~10 דק\'' },
+                { name: 'UTMB גלבסטון', jobs: '~10,000 עובדים', min: '~27 דק\'' },
+                { name: 'NASA ומרכז החלל', jobs: '~10,000 עובדים', min: '~30 דק\'' }
+            ]
         }
     ];
 
     // ========== EMPLOYERS & INDUSTRY ==========
+    // tier 1 = always visible when the employers layer is on; tier 2 = revealed at zoom >= 10
+    // Data verified against official sources 07/2026 (see research/jobs-review-2026-07-14.json)
     const employers = [
+        // ---- tier 1: metro flagships ----
         {
-            name: 'Apple AI',
-            nameHe: 'מפעל Apple AI',
-            icon: '🍎',
-            logo: 'https://www.google.com/s2/favicons?domain=apple.com&sz=64',
-            lat: 29.870,
-            lng: -95.545,
-            employees: '~5,000',
-            desc: 'מפעל ייצור שרתי AI ו-Mac Mini של Apple. 500,000 רגל רבוע, אלפי עובדים. השקעה של $600B בארה"ב.',
-            type: 'טכנולוגיה'
-        },
-        {
-            name: 'HPE HQ',
-            nameHe: 'מטה עולמי HPE',
-            icon: '💻',
-            logo: 'https://www.google.com/s2/favicons?domain=hpe.com&sz=64',
-            lat: 30.017,
-            lng: -95.461,
-            employees: '~4,000',
-            desc: 'מטה עולמי של Hewlett Packard Enterprise. עבר מסיליקון ואלי ב-2022. קמפוס 440,000 רגל רבוע ב-Springwoods Village.',
-            type: 'טכנולוגיה'
-        },
-        {
-            name: 'ExxonMobil',
-            nameHe: 'קמפוס ExxonMobil',
-            icon: '🛢️',
-            logo: 'https://www.google.com/s2/favicons?domain=exxonmobil.com&sz=64',
-            lat: 30.0667,
-            lng: -95.3981,
-            employees: '10,000+',
-            desc: 'מטה ExxonMobil בספרינג. אחת מחברות האנרגיה הגדולות בעולם. 10,000+ עובדים באתר.',
-            type: 'אנרגיה'
-        },
-        {
-            name: 'Energy Corridor',
-            nameHe: 'מסדרון האנרגיה',
-            icon: '',
-            lat: 29.7724,
-            lng: -95.5609,
-            employees: '90,000+',
-            desc: 'ריכוז מטות של BP, Shell, ConocoPhillips, Phillips 66 ועוד. מעל 90,000 עובדים באזור.',
-            type: 'אנרגיה'
-        },
-        {
-            name: 'Ship Channel',
-            nameHe: 'תעלת הספנות / פטרוכימיה',
-            icon: '',
-            lat: 29.737,
-            lng: -95.013,
-            employees: '100,000+',
-            desc: 'אזור תעשייה פטרוכימי עצום. 44% מכלל ייצור הפטרוכימיה בארה"ב. מאות מפעלים.',
-            type: 'תעשייה'
+            name: 'Downtown + Chevron',
+            nameHe: 'מרכז העסקים + מטה Chevron',
+            icon: '🏙️',
+            logo: 'https://www.google.com/s2/favicons?domain=chevron.com&sz=64',
+            lat: 29.7556,
+            lng: -95.3718,
+            tier: 1,
+            jobsLabel: '~150,000 עובדים',
+            desc: 'מרכז העסקים של יוסטון - כ-150,000 עובדים וכ-3,500 חברות. Chevron העבירה לכאן את המטה העולמי שלה מקליפורניה (2024) - כ-7,000 עובדים באזור.',
+            type: 'מרכז עסקים'
         },
         {
             name: 'Medical Center',
@@ -783,9 +921,85 @@
             logo: 'https://www.google.com/s2/favicons?domain=tmc.edu&sz=64',
             lat: 29.7066,
             lng: -95.3975,
-            employees: '106,000+',
-            desc: 'המרכז הרפואי הגדול בעולם. 106,000+ עובדים. כולל 60 מוסדות רפואיים.',
+            tier: 1,
+            labelSide: 'below',
+            jobsLabel: '120,000+ עובדים',
+            desc: 'המרכז הרפואי הגדול בעולם - 120,000+ עובדים ו-60+ מוסדות רפואיים. ממשיך להתרחב עם קמפוס המחקר Helix Park.',
             type: 'רפואה'
+        },
+        {
+            name: 'Energy Corridor',
+            nameHe: 'מסדרון האנרגיה',
+            icon: '🏢',
+            lat: 29.781,
+            lng: -95.628,
+            tier: 1,
+            labelSide: 'below',
+            area: 5500,
+            jobsLabel: '~73,000 עובדים',
+            desc: 'רצועת מטות האנרגיה לאורך I-10 במערב יוסטון: BP אמריקה, Shell ארה"ב, ConocoPhillips ועוד 300+ חברות. כ-73,000 עובדים ביום.',
+            type: 'אנרגיה'
+        },
+        {
+            name: 'Ship Channel',
+            nameHe: 'תעלת הספנות / פטרוכימיה',
+            icon: '🏭',
+            lat: 29.735,
+            lng: -95.098,
+            tier: 1,
+            labelSide: 'below',
+            area: 9000,
+            jobsLabel: 'עשרות אלפי עובדים',
+            desc: 'המתחם הפטרוכימי הגדול בארה"ב - מעל 40% מכושר הייצור הפטרוכימי של המדינה, מאות מפעלים לאורך התעלה מפסדינה ועד בייטאון.',
+            type: 'תעשייה'
+        },
+        {
+            name: 'ExxonMobil Baytown',
+            nameHe: 'מתחם ExxonMobil בייטאון',
+            icon: '🛢️',
+            logo: 'https://www.google.com/s2/favicons?domain=exxonmobil.com&sz=64',
+            lat: 29.767,
+            lng: -95.032,
+            tier: 1,
+            jobsLabel: '~7,000 עובדים',
+            desc: 'מהמתחמים המשולבים (זיקוק + כימיה) הגדולים בעולם. בינואר 2026 החלה הרחבה של $27-29 מיליארד (הפעלה 2028). לצידו מפעלי Chevron Phillips (~3,300) ו-Covestro (~1,750).',
+            type: 'אנרגיה'
+        },
+        {
+            name: 'ExxonMobil HQ',
+            nameHe: 'קמפוס ExxonMobil',
+            icon: '🛢️',
+            logo: 'https://www.google.com/s2/favicons?domain=exxonmobil.com&sz=64',
+            lat: 30.1029,
+            lng: -95.4461,
+            tier: 1,
+            jobsLabel: '10,000+ עובדים',
+            desc: 'המטה העולמי של ExxonMobil ב-Springwoods Village. 10,000+ עובדים בקמפוס. ממש לידו: המטה העולמי של HPE.',
+            type: 'אנרגיה'
+        },
+        {
+            name: 'Apple + Nvidia',
+            nameHe: 'מפעל שרתי AI - Apple ו-Nvidia',
+            icon: '🍎',
+            logo: 'https://www.google.com/s2/favicons?domain=apple.com&sz=64',
+            lat: 29.908,
+            lng: -95.525,
+            tier: 1,
+            jobsLabel: 'אלפי משרות',
+            desc: 'מפעל שרתי ה-AI של Apple (בהפעלת Foxconn) - הייצור החל ב-2025 ומתרחב ב-2026. באותו אתר מיוצרים גם מחשבי-העל של Nvidia. חלק מהשקעת $600B של Apple בארה"ב.',
+            type: 'טכנולוגיה'
+        },
+        {
+            name: 'Daikin Park',
+            nameHe: 'פארק הטכנולוגיה של Daikin',
+            icon: '❄️',
+            logo: 'https://www.google.com/s2/favicons?domain=daikincomfort.com&sz=64',
+            lat: 30.0499,
+            lng: -95.8624,
+            tier: 1,
+            jobsLabel: '~10,000 עובדים',
+            desc: 'Daikin Texas Technology Park - מהמפעלים הגדולים בצפון אמריקה (מיזוג אוויר): 4M+ רגל רבוע תחת גג אחד, כ-10,000 עובדים. 10 דקות מהוקלי.',
+            type: 'תעשייה'
         },
         {
             name: 'NASA JSC',
@@ -794,8 +1008,9 @@
             logo: 'https://www.google.com/s2/favicons?domain=nasa.gov&sz=64',
             lat: 29.5519,
             lng: -95.0930,
-            employees: '10,000+',
-            desc: 'מרכז החלל של NASA ביוסטון. מרכז הפיקוד על טיסות חלל מאוישות. 10,000+ עובדים, כולל מהנדסים ומדענים.',
+            tier: 1,
+            jobsLabel: '~10,000 עובדים',
+            desc: 'מרכז החלל של NASA - "יוסטון, יש לנו בעיה" נאמר לכאן. מרכז הפיקוד על טיסות החלל המאוישות של ארה"ב. כ-10,000 עובדים + אקוסיסטם חברות חלל (Axiom, Intuitive Machines).',
             type: 'חלל ומחקר'
         },
         {
@@ -805,9 +1020,35 @@
             logo: 'https://www.google.com/s2/favicons?domain=fly2houston.com&sz=64',
             lat: 29.9902,
             lng: -95.3368,
-            employees: '40,000+',
-            desc: 'נמל התעופה הבינלאומי ג\'ורג\' בוש (IAH). שער כניסה עיקרי ליוסטון עם 40M+ נוסעים בשנה. מעסיק 40,000+ עובדים.',
+            tier: 1,
+            jobsLabel: '~27,500 עובדים',
+            desc: 'נמל התעופה הבינלאומי ג\'ורג\' בוש - 48M+ נוסעים בשנה (שיא 2024). כ-27,500 עובדים בשדה, ותומך בכ-158,000 משרות ברחבי המטרו.',
             type: 'תחבורה'
+        },
+        {
+            name: 'The Woodlands',
+            nameHe: 'מרכז העסקים The Woodlands',
+            icon: '🌲',
+            lat: 30.17,
+            lng: -95.4635,
+            tier: 1,
+            jobsLabel: '~40,000 עובדים',
+            desc: 'מוקד התעסוקה של הפרברים הצפוניים - Town Center ו-Hughes Landing: מטות Chevron Phillips Chemical ו-Huntsman ועוד 84 חברות גדולות. כ-40,400 משרות.',
+            type: 'מרכז עסקים'
+        },
+        // ---- tier 2: local anchors (revealed at zoom >= 10) ----
+        {
+            name: 'HPE HQ',
+            nameHe: 'מטה עולמי HPE',
+            icon: '💻',
+            logo: 'https://www.google.com/s2/favicons?domain=hpe.com&sz=64',
+            lat: 30.0965,
+            lng: -95.4407,
+            tier: 2,
+            labelSide: 'below',
+            jobsLabel: '~2,600 עובדים',
+            desc: 'המטה העולמי של Hewlett Packard Enterprise - עבר מסיליקון ואלי ב-2022. קמפוס 440,000 רגל רבוע ב-Springwoods Village, שכן של קמפוס ExxonMobil.',
+            type: 'טכנולוגיה'
         },
         {
             name: 'Univ. of Houston',
@@ -816,9 +1057,140 @@
             logo: 'https://www.google.com/s2/favicons?domain=uh.edu&sz=64',
             lat: 29.7199,
             lng: -95.3422,
-            employees: '46,000+',
-            desc: 'אוניברסיטת יוסטון - מהאוניברסיטאות הגדולות בטקסס. 46,000+ סטודנטים ו-6,000+ עובדים. קמפוס ענק עם מרכזי מחקר מתקדמים.',
+            tier: 2,
+            labelSide: 'below',
+            jobsLabel: '~8,000 עובדים',
+            desc: 'מהאוניברסיטאות הגדולות בטקסס - כ-49,000 סטודנטים וכ-8,000 עובדים. קמפוס ענק עם מרכזי מחקר מתקדמים.',
             type: 'השכלה גבוהה'
+        },
+        {
+            name: 'Generation Park',
+            nameHe: 'פארק העסקים Generation Park',
+            icon: '🧬',
+            lat: 29.8828,
+            lng: -95.1678,
+            tier: 2,
+            jobsLabel: 'צומח - Eli Lilly',
+            desc: 'פארק עסקים מתוכנן על 4,300 דונם: קמפוס TechnipFMC (~1,800 עובדים), קולג\'ים, ומפעל התרופות של Eli Lilly בהקמה ($6.5B, 615 משרות ישירות בשכר גבוה). יעד היזם: עד 150,000 משרות בבנייה מלאה.',
+            type: 'עסקים ותעשייה'
+        },
+        {
+            name: 'Katy ISD',
+            nameHe: 'מחוז בתי הספר של קייטי',
+            icon: '🏫',
+            lat: 29.7804,
+            lng: -95.8325,
+            tier: 2,
+            jobsLabel: '~14,000 עובדים',
+            desc: 'מחוז בתי הספר של קייטי - מהמעסיקים הציבוריים הגדולים במערב יוסטון, ומהמחוזות המבוקשים בטקסס. Anniston נמצאת בתוך המחוז.',
+            type: 'ציבורי'
+        },
+        {
+            name: 'Academy HQ',
+            nameHe: 'מטה Academy Sports',
+            icon: '🏀',
+            logo: 'https://www.google.com/s2/favicons?domain=academy.com&sz=64',
+            lat: 29.7979,
+            lng: -95.7488,
+            tier: 2,
+            labelSide: 'below',
+            jobsLabel: '~2,350 עובדים',
+            desc: 'המטה ומרכז ההפצה של רשת Academy Sports + Outdoors (Fortune 500) בקייטי.',
+            type: 'קמעונאות'
+        },
+        {
+            name: 'Katy Medical',
+            nameHe: 'מרכז רפואי Katy I-10',
+            icon: '🏥',
+            lat: 29.7873,
+            lng: -95.6981,
+            tier: 2,
+            jobsLabel: '~4,500 עובדים',
+            desc: 'אשכול שלושת בתי החולים של קייטי: Houston Methodist West, Texas Children\'s West ו-Memorial Hermann Katy. תעסוקה יציבה שאינה תלויה במחירי נפט.',
+            type: 'רפואה'
+        },
+        {
+            name: 'Cy-Fair ISD',
+            nameHe: 'מחוז בתי הספר Cy-Fair',
+            icon: '🏫',
+            lat: 29.9084,
+            lng: -95.6959,
+            tier: 2,
+            jobsLabel: '~16,400 עובדים',
+            desc: 'מחוז בתי הספר השלישי בגודלו בטקסס + קולג\' Lone Star CyFair - מעסיק הענק של מסדרון 290.',
+            type: 'ציבורי'
+        },
+        {
+            name: 'Tesla Megafactory',
+            nameHe: 'מפעל Tesla בברוקשייר',
+            icon: '⚡',
+            logo: 'https://www.google.com/s2/favicons?domain=tesla.com&sz=64',
+            lat: 29.7832,
+            lng: -95.9231,
+            tier: 2,
+            status: 'בהקמה',
+            jobsLabel: '1,500 משרות עד 2028',
+            desc: 'מפעל Megapack (אגירת אנרגיה) של Tesla בהקמה בברוקשייר - השקעה של $200M. ייצור מתוכנן מסוף 2026; כ-375 משרות עד סוף 2026, 1,500 עד 2028.',
+            type: 'טכנולוגיה'
+        },
+        {
+            name: 'Walmart DC',
+            nameHe: 'מרכז הפצה Walmart + פארק תעשייה',
+            icon: '📦',
+            logo: 'https://www.google.com/s2/favicons?domain=walmart.com&sz=64',
+            lat: 30.1697,
+            lng: -95.2888,
+            tier: 2,
+            jobsLabel: '~1,400 עובדים',
+            desc: 'מרכז ההפצה של Walmart + פארק התעשייה של מזרח מונטגומרי - התעסוקה המקומית של ניו קייני, במרחק 10 דקות מהקהילה.',
+            type: 'לוגיסטיקה'
+        },
+        {
+            name: 'Cedar Port',
+            nameHe: 'פארק התעשייה Cedar Port',
+            icon: '🚛',
+            lat: 29.727,
+            lng: -94.895,
+            tier: 2,
+            jobsLabel: 'אלפי משרות',
+            desc: 'מפארקי התעשייה משורתי-הרכבת הגדולים בארה"ב (15,000 דונם) - מחסני ענק של Walmart, IKEA ועוד. אלפי משרות לוגיסטיקה.',
+            type: 'לוגיסטיקה'
+        },
+        {
+            name: 'Marathon Refinery',
+            nameHe: 'בית הזיקוק Marathon',
+            icon: '🏭',
+            lat: 29.3775,
+            lng: -94.9328,
+            tier: 2,
+            jobsLabel: '~1,550 + אלפי קבלנים',
+            desc: 'בית הזיקוק Galveston Bay בטקסס סיטי - מהגדולים בארה"ב (593 אלף חביות ביום). כ-1,550 עובדים ישירים + אלפי קבלנים יומיים. 10 דקות מלאגו מאר.',
+            type: 'אנרגיה'
+        },
+        {
+            name: 'UTMB Galveston',
+            nameHe: 'המרכז הרפואי-אוניברסיטאי UTMB',
+            icon: '🏥',
+            logo: 'https://www.google.com/s2/favicons?domain=utmb.edu&sz=64',
+            lat: 29.312,
+            lng: -94.7763,
+            tier: 2,
+            labelSide: 'below',
+            jobsLabel: '~10,000 עובדים',
+            desc: 'University of Texas Medical Branch בגלבסטון - המעסיק הגדול ביותר באזור המפרץ: כ-9,900 עובדים בגלבסטון (~13,000 בכל הקמפוסים).',
+            type: 'רפואה'
+        },
+        {
+            name: 'Davie Shipyard',
+            nameHe: 'מספנת שוברות הקרח Davie',
+            icon: '🚢',
+            lat: 29.332,
+            lng: -94.802,
+            tier: 2,
+            status: 'בהקמה',
+            jobsLabel: '2,400+ משרות מתוכננות',
+            desc: 'מספנת שוברות הקרח של Davie בפליקן איילנד (גלבסטון) - השקעה של כ-$1 מיליארד, אבן פינה יוני 2026. מעל 2,400 משרות מתוכננות.',
+            type: 'תעשייה ביטחונית'
         },
     ];
 
@@ -828,28 +1200,24 @@
             name: 'Toro District',
             nameHe: 'מתחם טורו - מטה Houston Texans',
             icon: '🏈',
-            lat: 29.9295,
-            lng: -95.6920,
+            lat: 29.936,
+            lng: -95.719,
             status: 'בתכנון · פתיחה 2029',
             cost: '$34B השפעה כלכלית',
-            desc: 'מטה עולמי חדש של Houston Texans על 83 אקר ב-Bridgeland. כולל אצטדיון מקורה 16,000 מושבים, 3 מגרשי אימון NFL, קמעונאות, מלונות ובילוי. 17,000 משרות חדשות. שותפות עם Harris County ו-Howard Hughes.',
-            highlights: ['אצטדיון מקורה 150,000 sqft', '175,000 sqft משרדים', '61 אקר מסחרי', '6 פארקים + 5,000 חניות']
+            desc: 'מטה עולמי חדש של Houston Texans על 83 אקר ב-Bridgeland. כולל מתחם אימונים מקורה לכ-16,000 צופים, 3 מגרשי אימון NFL, קמעונאות, מלונות ובילוי. 17,000 משרות חדשות. שותפות עם Harris County ו-Howard Hughes.',
+            highlights: ['מתחם אימונים מקורה 150,000 sqft', '175,000 sqft משרדים', '61 אקר מסחרי', '6 פארקים + 5,000 חניות']
         },
         {
             name: 'Convention District',
             nameHe: 'מתחם הכנסים - הרחבת GRB',
             icon: '🏗️',
-            lat: 29.7520,
-            lng: -95.3555,
+            lat: 29.7519,
+            lng: -95.3575,
             status: 'בבנייה · שלב 1 נפתח 2028',
             cost: '$2B · $20B השפעה ב-30 שנה',
-            desc: 'הרחבת מרכז הכנסים George R. Brown ב-700,000 sqft. אולם האירועים הגדול בטקסס, פלאזה 100,000 sqft, קמעונאות ומסעדות. 60 בלוקים של פיתוח מעורב - מגורים, מלונות, בילוי. קו רכבת קלה עתידי.',
-            highlights: ['700,000 sqft הרחבה', 'האולם הגדול בטקסס', 'FIFA 2026 + RNC 2028', 'קו מטרו חדש מזרח-מערב']
+            desc: 'הרחבת מרכז הכנסים George R. Brown ב-700,000 sqft. אולם האירועים הגדול בטקסס, פלאזה 100,000 sqft, קמעונאות ומסעדות. 60 בלוקים של פיתוח מעורב - מגורים, מלונות, בילוי. קו רכבת קלה עתידי. יוסטון אירחה 7 משחקי מונדיאל ביוני-יולי 2026.',
+            highlights: ['700,000 sqft הרחבה', 'האולם הגדול בטקסס', 'אירחה מונדיאל 2026 · RNC 2028', 'קו מטרו חדש מזרח-מערב']
         }
-    ];
-
-    const landmarks = [
-        { name: 'מרכז יוסטון (Downtown)', icon: '🏙️', lat: 29.7604, lng: -95.3698 },
     ];
 
     // ========== MAP SETUP ==========
@@ -885,23 +1253,32 @@
 
     function setLayer(type) {
         gtag('event', 'map_layer_switch', { layer_type: type });
-        document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btnStreet').classList.remove('active');
+        document.getElementById('btnSatellite').classList.remove('active');
         if (type === 'satellite') {
             map.removeLayer(streetLayer);
             map.removeLayer(labelsLayer);
             satelliteLayer.addTo(map);
             labelsLayer.addTo(map);
-            document.querySelectorAll('.map-btn')[1].classList.add('active');
+            document.getElementById('btnSatellite').classList.add('active');
         } else {
             map.removeLayer(satelliteLayer);
             map.removeLayer(labelsLayer);
             streetLayer.addTo(map);
-            document.querySelectorAll('.map-btn')[0].classList.add('active');
+            document.getElementById('btnStreet').classList.add('active');
         }
         currentLayer = type;
     }
 
-    // ========== HOUSTON DISTANCE RINGS ==========
+    // ========== LAYER GROUPS (controlled by the layers panel) ==========
+    const communitiesLayer = L.layerGroup();
+    const employersT1 = L.layerGroup();   // metro flagships - always shown when employers layer is on
+    const employersT2 = L.layerGroup();   // local anchors - shown at zoom >= 10
+    const futureLayer = L.layerGroup();
+    const driveLayer = L.layerGroup();    // distance rings + drive-time lines (off by default)
+    const T2_MIN_ZOOM = 10;
+
+    // ========== HOUSTON DISTANCE RINGS (into driveLayer) ==========
     const ringDistances = [
         { radius: 16000, label: '~15 דקות' },
         { radius: 32000, label: '~30 דקות' },
@@ -916,7 +1293,7 @@
         fillOpacity: 0.08,
         weight: 2,
         opacity: 0.5
-    }).addTo(map);
+    }).addTo(driveLayer);
 
     ringDistances.forEach(ring => {
         L.circle(HOUSTON_CENTER, {
@@ -926,7 +1303,7 @@
             fillOpacity: 0,
             weight: 1.5,
             dashArray: '8, 8'
-        }).addTo(map);
+        }).addTo(driveLayer);
 
         // Label at the top of each ring
         const labelLat = HOUSTON_CENTER[0] + (ring.radius / 111320);
@@ -938,11 +1315,11 @@
                 iconAnchor: [30, 8]
             }),
             interactive: false
-        }).addTo(map);
+        }).addTo(driveLayer);
     });
 
-    // ========== DRIVING TIME LINES ==========
-    communities.forEach(c => {
+    // ========== DRIVING TIME LINES (into driveLayer; each community can also show its own line temporarily) ==========
+    function buildDriveLine(c) {
         const line = L.polyline(
             [HOUSTON_CENTER, [c.lat, c.lng]],
             {
@@ -951,20 +1328,23 @@
                 opacity: 0.6,
                 dashArray: '8, 6'
             }
-        ).addTo(map);
-
-        // Drive time label at midpoint
+        );
         const midLat = (HOUSTON_CENTER[0] + c.lat) / 2;
         const midLng = (HOUSTON_CENTER[1] + c.lng) / 2;
-        L.marker([midLat, midLng], {
+        const label = L.marker([midLat, midLng], {
             icon: L.divIcon({
                 className: 'drive-label',
-                html: `🚗 ${c.driveTime}`,
-                iconSize: [90, 22],
-                iconAnchor: [45, 11]
+                html: `🚗 ${c.driveTime} למרכז יוסטון`,
+                iconSize: [150, 22],
+                iconAnchor: [75, 11]
             }),
             interactive: false
-        }).addTo(map);
+        });
+        return L.layerGroup([line, label]);
+    }
+
+    communities.forEach(c => {
+        buildDriveLine(c).addTo(driveLayer);
     });
 
     // ========== COMMUNITY MARKERS ==========
@@ -988,8 +1368,15 @@
     const communityMarkers = {};
 
     communities.forEach(c => {
+        const jobsHtml = (c.jobAnchors && c.jobAnchors.length)
+            ? `<div class="popup-jobs">
+                    <div class="pj-title">💼 מקומות עבודה קרובים</div>
+                    ${c.jobAnchors.map(a => `<div class="pj-row"><span class="pj-name">${a.name}</span><span class="pj-jobs">${a.jobs}</span><span class="pj-min">🚗 ${a.min}</span></div>`).join('')}
+               </div>`
+            : '';
+
         const marker = L.marker([c.lat, c.lng], { icon: createCommunityIcon(c.color) })
-            .addTo(map)
+            .addTo(communitiesLayer)
             .bindPopup(`
                 <div class="popup-header">
                     <h3>${c.name} (${c.nameHe})</h3>
@@ -1001,6 +1388,7 @@
                     <div class="info-row"><span class="label">טווח מחירים</span><span class="value">${c.priceRange}</span></div>
                     <div class="info-row"><span class="label">מחוז בתי ספר</span><span class="value">${c.schoolDistrict}</span></div>
                     <div class="info-row"><span class="label">נקודות עניין</span><span class="value">${c.highlights.join(', ')}</span></div>
+                    ${jobsHtml}
                     <div class="popup-links">
                         <a class="lennar-link" href="${c.url}" target="_blank">צפה ב-Lennar.com ←</a>
                         <button class="aerial-btn" onclick="openAerial('${c.id}')">📸 צילום אווירי</button>
@@ -1014,16 +1402,28 @@
             gtag('event', 'community_click', { community_name: c.name, community_id: c.id, area: c.area });
         });
 
-        // Community name label above marker
-        L.marker([c.lat + 0.018, c.lng], {
+        // While a community popup is open, show its drive-to-downtown line
+        // (even when the distance layer is switched off)
+        let tempLine = null;
+        marker.on('popupopen', () => {
+            if (!document.getElementById('lyr-drive').checked) {
+                tempLine = buildDriveLine(c).addTo(map);
+            }
+        });
+        marker.on('popupclose', () => {
+            if (tempLine) { map.removeLayer(tempLine); tempLine = null; }
+        });
+
+        // Community name label - anchored in pixels so it hugs the marker at every zoom level
+        L.marker([c.lat, c.lng], {
             icon: L.divIcon({
                 className: 'community-label',
                 html: c.name,
                 iconSize: [200, 30],
-                iconAnchor: [100, 15]
+                iconAnchor: [100, 50]
             }),
             interactive: false
-        }).addTo(map);
+        }).addTo(communitiesLayer);
 
         // Subtle circle around community
         L.circle([c.lat, c.lng], {
@@ -1033,7 +1433,7 @@
             fillOpacity: 0.08,
             weight: 1.5,
             opacity: 0.4
-        }).addTo(map);
+        }).addTo(communitiesLayer);
     });
 
     // ========== AERIAL PHOTO MODAL ==========
@@ -1111,81 +1511,96 @@
 
     // ========== EMPLOYER MARKERS ==========
     function createEmployerIcon(emp) {
+        const size = emp.tier === 1 ? 40 : 32;
         const inner = emp.logo
-            ? `<img src="${emp.logo}" style="width:26px;height:26px;object-fit:contain;border-radius:4px;pointer-events:none;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:20px;pointer-events:none">${emp.icon}</span>`
-            : `<span style="font-size:20px;pointer-events:none">${emp.icon}</span>`;
+            ? `<img src="${emp.logo}" style="width:${size - 14}px;height:${size - 14}px;object-fit:contain;border-radius:4px;pointer-events:none;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:${size - 20}px;pointer-events:none">${emp.icon}</span>`
+            : `<span style="font-size:${size - 20}px;pointer-events:none">${emp.icon}</span>`;
         return L.divIcon({
             className: 'employer-marker',
             html: `<div style="
-                width: 40px; height: 40px;
+                width: ${size}px; height: ${size}px;
                 background: #fff;
-                border: 2px solid #e67e22;
+                border: 2px ${emp.status ? 'dashed' : 'solid'} #e67e22;
                 border-radius: 8px;
                 box-shadow: 0 3px 10px rgba(0,0,0,0.35);
                 display: flex; align-items: center; justify-content: center;
             ">${inner}</div>`,
-            iconSize: [40, 40],
-            iconAnchor: [20, 20],
-            popupAnchor: [0, -22]
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2],
+            popupAnchor: [0, -(size / 2 + 4)]
+        });
+    }
+
+    // Label groups: compact name-only labels far out, full name+jobs labels close up
+    const empLabelsLow = L.layerGroup();   // tier-1 compact labels, zoom < T2_MIN_ZOOM
+    const empLabelsHi = L.layerGroup();    // tier-1 full labels, zoom >= T2_MIN_ZOOM
+
+    // Pixel-anchored label that hugs its marker at every zoom; side 'above' | 'below'
+    function makeEmployerLabel(emp, markerSize, full) {
+        const w = 110, h = full ? 38 : 20, gap = 4;
+        const side = emp.labelSide === 'below' ? 'below' : 'above';
+        const anchorY = side === 'above' ? (h + markerSize / 2 + gap) : -(markerSize / 2 + gap);
+        const html = full
+            ? `${emp.name}<br><span style="font-size:9px;font-weight:400;opacity:0.85">${emp.status ? '🚧 ' : ''}${emp.jobsLabel}</span>`
+            : `<span style="font-size:10px">${emp.status ? '🚧 ' : ''}${emp.name}</span>`;
+        return L.marker([emp.lat, emp.lng], {
+            icon: L.divIcon({
+                className: 'employer-label',
+                html: html,
+                iconSize: [w, h],
+                iconAnchor: [w / 2, anchorY]
+            }),
+            interactive: false
         });
     }
 
     employers.forEach(emp => {
-        const hasIcon = emp.logo || emp.icon;
-        if (hasIcon) {
-            L.marker([emp.lat, emp.lng], { icon: createEmployerIcon(emp) })
-                .addTo(map)
-                .bindPopup(`
-                    <div class="popup-header" style="background:linear-gradient(135deg, #e67e22, #d35400);">
-                        <h3>${emp.logo ? `<img src="${emp.logo}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px;border-radius:3px">` : emp.icon} ${emp.name}</h3>
-                        <div class="sub">${emp.nameHe} · ${emp.type}</div>
-                    </div>
-                    <div class="popup-body">
-                        <p>${emp.desc}</p>
-                    </div>
-            `, { maxWidth: 300 });
+        const group = emp.tier === 1 ? employersT1 : employersT2;
+        const size = emp.tier === 1 ? 40 : 32;
+        const statusBadge = emp.status ? `<span class="status-badge">🚧 ${emp.status}</span>` : '';
+
+        L.marker([emp.lat, emp.lng], { icon: createEmployerIcon(emp) })
+            .addTo(group)
+            .bindPopup(`
+                <div class="popup-header" style="background:linear-gradient(135deg, #e67e22, #d35400);">
+                    <h3>${emp.logo ? `<img src="${emp.logo}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px;border-radius:3px">` : emp.icon} ${emp.name} ${statusBadge}</h3>
+                    <div class="sub">${emp.nameHe} · ${emp.type}</div>
+                </div>
+                <div class="popup-body">
+                    <div class="info-row"><span class="label">היקף תעסוקה</span><span class="value">${emp.jobsLabel}</span></div>
+                    <p style="margin-top:8px">${emp.desc}</p>
+                </div>
+            `, { maxWidth: 300 })
+            .on('click', () => {
+                gtag('event', 'employer_click', { employer_name: emp.name, employer_type: emp.type });
+            });
+
+        // Districts (Energy Corridor, Ship Channel) get a soft area circle - they are zones, not a single site
+        if (emp.area) {
+            L.circle([emp.lat, emp.lng], {
+                radius: emp.area,
+                color: '#e67e22',
+                fillColor: '#e67e22',
+                fillOpacity: 0.06,
+                weight: 1.5,
+                dashArray: '6, 6',
+                opacity: 0.5,
+                interactive: false
+            }).addTo(group);
         }
 
-        // Compact square-ish label: name + employees
-        const labelHtml = emp.employees
-            ? `${emp.name}<br><span style="font-size:9px;font-weight:400;opacity:0.85">(${emp.employees})</span>`
-            : emp.name;
-        L.marker([emp.lat + 0.02, emp.lng], {
-            icon: L.divIcon({
-                className: 'employer-label',
-                html: labelHtml,
-                iconSize: [110, 38],
-                iconAnchor: [55, 19]
-            }),
-            interactive: false
-        }).addTo(map);
-    });
-
-    // ========== LANDMARK MARKERS ==========
-    function createLandmarkIcon() {
-        return L.divIcon({
-            className: 'landmark-marker',
-            html: `<div style="
-                width: 18px; height: 18px;
-                background: #3498db;
-                border: 2px solid #fff;
-                border-radius: 50%;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-                opacity: 0.8;
-            "></div>`,
-            iconSize: [18, 18],
-            iconAnchor: [9, 9],
-            popupAnchor: [0, -12]
-        });
-    }
-
-    landmarks.forEach(lm => {
-        L.marker([lm.lat, lm.lng], { icon: createLandmarkIcon() })
-            .addTo(map)
-            .bindPopup(`<div style="padding:8px;font-size:14px;font-weight:600;">${lm.icon} ${lm.name}</div>`, { maxWidth: 200 });
+        if (emp.tier === 1) {
+            makeEmployerLabel(emp, size, false).addTo(empLabelsLow);
+            makeEmployerLabel(emp, size, true).addTo(empLabelsHi);
+        } else {
+            makeEmployerLabel(emp, size, true).addTo(group);
+        }
     });
 
     // ========== MAP - FUTURE DEVELOPMENTS ==========
+    // markers of stand-alone projects always show (when the layer is on);
+    // labels + downtown projects (which overlap the Downtown pin) appear from zoom >= 10
+    const futureDetail = L.layerGroup();
     futureDevelopments.forEach(fd => {
         const fdIcon = L.divIcon({
             className: 'employer-icon',
@@ -1193,11 +1608,12 @@
             iconSize: [30, 30],
             iconAnchor: [15, 15]
         });
+        const markerGroup = (fd.name === 'Convention District') ? futureDetail : futureLayer;
         L.marker([fd.lat, fd.lng], { icon: fdIcon })
-            .addTo(map)
+            .addTo(markerGroup)
             .bindPopup(`
                 <div class="popup-header" style="background:linear-gradient(135deg, #8e44ad, #6c3483);">
-                    <h3>${fd.icon} ${fd.name}</h3>
+                    <h3>${fd.icon} ${fd.name} <span class="status-badge" style="background:#8e44ad">עתידי</span></h3>
                     <div class="sub">${fd.nameHe}</div>
                 </div>
                 <div class="popup-body">
@@ -1207,16 +1623,65 @@
                 </div>
             `, { maxWidth: 350 });
 
-        // Label on map
+        // Label below the marker (pixel-anchored, click-through) - only from zoom >= 10
         L.marker([fd.lat, fd.lng], {
             icon: L.divIcon({
                 className: 'employer-label',
                 html: `<div style="white-space:nowrap;font-size:12px;font-weight:700;color:#8e44ad;text-shadow:1px 1px 3px #fff,-1px -1px 3px #fff,1px -1px 3px #fff,-1px 1px 3px #fff;pointer-events:none">${fd.name}<br><span style="font-size:10px;font-weight:400;opacity:0.85">${fd.status.split('·')[0].trim()}</span></div>`,
                 iconSize: [120, 30],
-                iconAnchor: [60, -12]
-            })
-        }).addTo(map);
+                iconAnchor: [60, -14]
+            }),
+            interactive: false
+        }).addTo(futureDetail);
     });
+
+    // ========== LAYERS PANEL LOGIC ==========
+    function setGroup(group, show) {
+        if (show) { if (!map.hasLayer(group)) group.addTo(map); }
+        else { if (map.hasLayer(group)) map.removeLayer(group); }
+    }
+
+    function applyLayers(fromUser) {
+        const on = id => document.getElementById(id).checked;
+        const zoomedIn = map.getZoom() >= T2_MIN_ZOOM;
+        setGroup(communitiesLayer, on('lyr-communities'));
+        setGroup(futureLayer, on('lyr-future'));
+        setGroup(futureDetail, on('lyr-future') && zoomedIn);
+        setGroup(driveLayer, on('lyr-drive'));
+        const emp = on('lyr-employers');
+        setGroup(employersT1, emp);
+        setGroup(employersT2, emp && zoomedIn);
+        setGroup(empLabelsLow, emp && !zoomedIn);
+        setGroup(empLabelsHi, emp && zoomedIn);
+        if (fromUser !== false) {
+            gtag('event', 'layers_change', {
+                communities: on('lyr-communities'), employers: emp,
+                future: on('lyr-future'), drive: on('lyr-drive'), zoom: map.getZoom()
+            });
+        }
+    }
+
+    map.on('zoomend', () => applyLayers(false));
+    applyLayers(false);
+
+    function toggleLayersPanel() {
+        document.getElementById('layersPanel').classList.toggle('open');
+    }
+
+    // ========== FIRST-VISIT HINT ==========
+    function dismissWelcome() {
+        document.getElementById('welcomeHint').classList.remove('show');
+        try { localStorage.setItem('hm_welcome_seen', '1'); } catch (e) {}
+    }
+    (function () {
+        let seen = false;
+        try { seen = localStorage.getItem('hm_welcome_seen') === '1'; } catch (e) {}
+        if (!seen) {
+            setTimeout(() => document.getElementById('welcomeHint').classList.add('show'), 800);
+            setTimeout(dismissWelcome, 12000);
+            map.once('popupopen', dismissWelcome);
+        }
+    })();
 
     // ========== RESOURCES / CONTENT FOR INVESTORS ==========
     const resources = [
@@ -1340,7 +1805,7 @@
 
         try {
             // Search near Houston area
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Houston, TX')}&limit=6&addressdetails=1&viewbox=-96.0,-95.0,29.5,30.3&bounded=0`;
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Houston, TX')}&limit=6&addressdetails=1&viewbox=-96.1,30.4,-94.6,29.2&bounded=0`;
             const resp = await fetch(url, { headers: { 'Accept-Language': 'en' } });
             const data = await resp.json();
 
