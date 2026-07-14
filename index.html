@@ -36,7 +36,7 @@
             border-radius: 12px 12px 0 0;
         }
         .popup-header h3 { font-size: 16px; margin-bottom: 2px; }
-        .popup-header .sub { font-size: 12px; color: #aaa; }
+        .popup-header .sub { font-size: 12px; color: #aaa; direction: rtl; text-align: right; }
         .popup-body { padding: 12px 16px 14px; }
         .popup-body p { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 8px; direction: rtl; text-align: right; }
         .popup-body .info-row {
@@ -105,7 +105,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        .aerial-modal-header h3 { font-size: 16px; }
+        .aerial-modal-header h3 { font-size: 16px; direction: rtl; }
         .aerial-modal-close {
             background: none;
             border: none;
@@ -655,8 +655,9 @@
             #resources-panel { width: 100vw; max-width: 100vw; left: -105vw; }
             #resources-btn { bottom: 16px; left: 16px; width: 46px; height: 46px; font-size: 20px; }
 
-            /* Search bar mobile */
-            .search-container { width: 240px; max-width: calc(100vw - 160px); }
+            /* Search bar mobile - below the map/satellite buttons so they stay clickable */
+            .search-container { width: 240px; max-width: calc(100vw - 160px); top: 44px; }
+            .search-results { top: 78px; }
             .search-container input { padding: 8px 10px; font-size: 12px; }
             .search-results { width: 280px; max-width: calc(100vw - 40px); }
             .sv-map-btn { width: 38px; height: 38px; font-size: 18px; bottom: 24px; }
@@ -676,7 +677,7 @@
                 <label><input type="checkbox" id="lyr-communities" checked onchange="applyLayers()"> 🏘️ קהילות להשקעה</label>
                 <label><input type="checkbox" id="lyr-employers" checked onchange="applyLayers()"> 💼 מרכזי תעסוקה</label>
                 <label><input type="checkbox" id="lyr-future" checked onchange="applyLayers()"> 🏗️ פרויקטים עתידיים</label>
-                <label><input type="checkbox" id="lyr-drive" onchange="applyLayers()"> 🚗 מרחק ממרכז יוסטון</label>
+                <label><input type="checkbox" id="lyr-drive" onchange="applyLayers()"> 🚗 זמן נסיעה ממרכז יוסטון</label>
                 <div class="lp-hint">💡 מתקרבים במפה - נחשפים מעסיקים ופרויקטים נוספים</div>
             </div>
         </div>
@@ -745,7 +746,7 @@
             communities: 'Indian Springs, Sweetgrass Village, Newport Preserve, Crosby Farms',
             priceRange: '$237K - $320K',
             schoolDistrict: 'Crosby ISD',
-            description: 'מזרח יוסטון. קרבה לנמל יוסטון ו-Lake Houston. גישה נוחה ל-I-90 ולהרחבת Grand Parkway. מחירים אטרקטיביים עם פוטנציאל צמיחה גבוה.',
+            description: 'מזרח יוסטון. קרבה לנמל יוסטון ו-Lake Houston. גישה נוחה ל-US-90 ולהרחבת Grand Parkway. מחירי כניסה מהנמוכים באזור יוסטון, על רקע התרחבות התעסוקה בסביבה.',
             highlights: ['קרבה ל-Lake Houston', 'הרחבת Grand Parkway', 'גישה לנמל יוסטון'],
             url: 'https://www.lennar.com/new-homes/texas/houston/crosby',
             driveTime: '~30 דקות',
@@ -757,7 +758,7 @@
             jobAnchors: [
                 { name: 'ExxonMobil Baytown', jobs: '~7,000 עובדים', min: '~20 דק\'' },
                 { name: 'Generation Park', jobs: 'צומח - Eli Lilly', min: '~20 דק\'' },
-                { name: 'תעלת הספנות (פטרוכימיה)', jobs: 'עשרות אלפים', min: '~25 דק\'' }
+                { name: 'תעלת הספנות (פטרוכימיה)', jobs: 'עשרות אלפי עובדים', min: '~25 דק\'' }
             ]
         },
         {
@@ -782,7 +783,7 @@
             aerialZoom: 17,
             aerialNote: 'שכונת Anniston בקייטי - בנייה חדשה באזור Harvest Wheat Ln',
             jobAnchors: [
-                { name: 'מסדרון האנרגיה (BP, Shell...)', jobs: '~73,000 עובדים', min: '~20 דק\'' },
+                { name: 'מסדרון האנרגיה (BP, Shell ועוד)', jobs: '~73,000 עובדים', min: '~20 דק\'' },
                 { name: 'Katy ISD - בתי הספר', jobs: '~14,000 עובדים', min: 'בתוך המחוז' },
                 { name: 'מרכז רפואי Katy I-10', jobs: '~4,500 עובדים', min: '~20 דק\'' }
             ]
@@ -811,7 +812,7 @@
             jobAnchors: [
                 { name: 'Generation Park', jobs: 'צומח - Eli Lilly', min: '~20-25 דק\'' },
                 { name: 'נמל תעופה IAH', jobs: '~27,500 עובדים', min: '~30 דק\'' },
-                { name: 'בתי החולים של Kingwood', jobs: 'רפואה', min: '~15 דק\'' }
+                { name: 'בתי החולים של Kingwood', jobs: 'אלפי עובדים', min: '~15 דק\'' }
             ]
         },
         {
@@ -826,8 +827,8 @@
             communities: 'The Trails, Tavola, Tavola West, Pinewood at Grand Texas',
             priceRange: '$230K - $350K',
             schoolDistrict: 'New Caney ISD',
-            description: 'צפון יוסטון. מספר קהילות גדולות כולל Tavola (1,560 דונם). קרבה ל-Valley Ranch Town Center, Big Rivers Water Park ו-US-59.',
-            highlights: ['תכנית Tavola - 1,560 דונם', 'Valley Ranch Town Center', 'גישה ל-Grand Parkway'],
+            description: 'צפון יוסטון. מספר קהילות גדולות כולל Tavola (1,560 אקר). קרבה ל-Valley Ranch Town Center, Big Rivers Water Park ו-US-59.',
+            highlights: ['תכנית Tavola - 1,560 אקר', 'Valley Ranch Town Center', 'גישה ל-Grand Parkway'],
             url: 'https://www.lennar.com/new-homes/texas/houston/new-caney',
             driveTime: '~40 דקות',
             driveMinutes: 40,
@@ -853,8 +854,8 @@
             communities: 'The Grand Prairie (The Highlands), Cypress Green, Dellrose',
             priceRange: '$246K - $427K',
             schoolDistrict: 'Waller ISD',
-            description: 'מערב-צפון יוסטון. The Grand Prairie - קהילה מתוכננת על 1,730 דונם עם אגם 70 דונם, בריכות ומתקני פנאי. קרבה ל-US-290 ו-Grand Parkway.',
-            highlights: ['אגם 70 דונם', 'מתחם פנאי Starlight', 'קרבה ל-US-290'],
+            description: 'מערב-צפון יוסטון. The Grand Prairie - קהילה מתוכננת על 1,730 אקר עם אגם 70 אקר, בריכות ומתקני פנאי. קרבה ל-US-290 ו-Grand Parkway.',
+            highlights: ['אגם 70 אקר', 'מתחם פנאי Starlight', 'קרבה ל-US-290'],
             url: 'https://www.lennar.com/new-homes/texas/houston/hockley',
             driveTime: '~40 דקות',
             driveMinutes: 40,
@@ -880,18 +881,18 @@
             communities: 'Lago Mar (מספר שכונות ובונים)',
             priceRange: '$260K - $510K',
             schoolDistrict: 'Dickinson ISD',
-            description: 'דרום יוסטון, ליד טקסס סיטי. קהילה על 2,033 דונם עם לגונה קריסטלית של 12 דונם, חוף חול לבן, מסעדה ומועדון. 4,500 בתים מתוכננים.',
-            highlights: ['לגונה קריסטלית 12 דונם', 'מועדון + בריכת אינפיניטי', 'קרבה לגלווסטון'],
+            description: 'דרום יוסטון, ליד טקסס סיטי. קהילה על 2,033 אקר עם לגונה קריסטלית של 12 אקר, חוף חול לבן, מסעדה ומועדון. 4,500 בתים מתוכננים.',
+            highlights: ['לגונה קריסטלית 12 אקר', 'מועדון + בריכת אינפיניטי', 'קרבה לגלווסטון'],
             url: 'https://lagomarintexascity.com/',
             driveTime: '~45 דקות',
             driveMinutes: 45,
             aerialLat: 29.4120,
             aerialLng: -95.0627,
             aerialZoom: 15,
-            aerialNote: 'לאגו מאר בטקסס סיטי - קהילה עם לגונה קריסטלית ענקית (Lago Costa Dr)',
+            aerialNote: 'לאגו מאר בטקסס סיטי - קהילה סביב לגונה קריסטלית (Lago Costa Dr)',
             jobAnchors: [
                 { name: 'תעשיית Texas City (Marathon)', jobs: 'אלפי עובדים וקבלנים', min: '~10 דק\'' },
-                { name: 'UTMB גלבסטון', jobs: '~10,000 עובדים', min: '~27 דק\'' },
+                { name: 'UTMB גלווסטון', jobs: '~10,000 עובדים', min: '~27 דק\'' },
                 { name: 'NASA ומרכז החלל', jobs: '~10,000 עובדים', min: '~30 דק\'' }
             ]
         }
@@ -937,7 +938,7 @@
             labelSide: 'below',
             area: 5500,
             jobsLabel: '~73,000 עובדים',
-            desc: 'רצועת מטות האנרגיה לאורך I-10 במערב יוסטון: BP אמריקה, Shell ארה"ב, ConocoPhillips ועוד 300+ חברות. כ-73,000 עובדים ביום.',
+            desc: 'רצועת מטות האנרגיה לאורך I-10 במערב יוסטון: BP אמריקה, Shell ארה"ב, ConocoPhillips ועוד 300+ חברות. כ-73,000 עובדים מדי יום.',
             type: 'אנרגיה'
         },
         {
@@ -950,7 +951,7 @@
             labelSide: 'below',
             area: 9000,
             jobsLabel: 'עשרות אלפי עובדים',
-            desc: 'המתחם הפטרוכימי הגדול בארה"ב - מעל 40% מכושר הייצור הפטרוכימי של המדינה, מאות מפעלים לאורך התעלה מפסדינה ועד בייטאון.',
+            desc: 'המתחם הפטרוכימי הגדול בארה"ב - מעל 40% מכושר הייצור הפטרוכימי של ארה"ב, מאות מפעלים לאורך התעלה מפסדינה ועד בייטאון.',
             type: 'תעשייה'
         },
         {
@@ -985,7 +986,7 @@
             lat: 29.908,
             lng: -95.525,
             tier: 1,
-            jobsLabel: 'אלפי משרות',
+            jobsLabel: 'אלפי עובדים',
             desc: 'מפעל שרתי ה-AI של Apple (בהפעלת Foxconn) - הייצור החל ב-2025 ומתרחב ב-2026. באותו אתר מיוצרים גם מחשבי-העל של Nvidia. חלק מהשקעת $600B של Apple בארה"ב.',
             type: 'טכנולוגיה'
         },
@@ -998,7 +999,7 @@
             lng: -95.8624,
             tier: 1,
             jobsLabel: '~10,000 עובדים',
-            desc: 'Daikin Texas Technology Park - מהמפעלים הגדולים בצפון אמריקה (מיזוג אוויר): 4M+ רגל רבוע תחת גג אחד, כ-10,000 עובדים. 10 דקות מהוקלי.',
+            desc: 'Daikin Texas Technology Park - מהמפעלים הגדולים בצפון אמריקה (מיזוג אוויר): 4M+ רגל רבועה תחת גג אחד, כ-10,000 עובדים. 10 דקות מהוקלי.',
             type: 'תעשייה'
         },
         {
@@ -1010,7 +1011,7 @@
             lng: -95.0930,
             tier: 1,
             jobsLabel: '~10,000 עובדים',
-            desc: 'מרכז החלל של NASA - "יוסטון, יש לנו בעיה" נאמר לכאן. מרכז הפיקוד על טיסות החלל המאוישות של ארה"ב. כ-10,000 עובדים + אקוסיסטם חברות חלל (Axiom, Intuitive Machines).',
+            desc: 'מרכז החלל של NASA - אליו הופנה המשפט "יוסטון, יש לנו בעיה". מרכז הפיקוד על טיסות החלל המאוישות של ארה"ב. כ-10,000 עובדים + אקוסיסטם של חברות חלל (Axiom, Intuitive Machines).',
             type: 'חלל ומחקר'
         },
         {
@@ -1022,7 +1023,7 @@
             lng: -95.3368,
             tier: 1,
             jobsLabel: '~27,500 עובדים',
-            desc: 'נמל התעופה הבינלאומי ג\'ורג\' בוש - 48M+ נוסעים בשנה (שיא 2024). כ-27,500 עובדים בשדה, ותומך בכ-158,000 משרות ברחבי המטרו.',
+            desc: 'נמל התעופה הבינלאומי ג\'ורג\' בוש - 48M+ נוסעים בשנה (שיא 2024). כ-27,500 עובדים בשדה, והוא תומך בכ-158,000 משרות ברחבי מטרופולין יוסטון.',
             type: 'תחבורה'
         },
         {
@@ -1033,7 +1034,7 @@
             lng: -95.4635,
             tier: 1,
             jobsLabel: '~40,000 עובדים',
-            desc: 'מוקד התעסוקה של הפרברים הצפוניים - Town Center ו-Hughes Landing: מטות Chevron Phillips Chemical ו-Huntsman ועוד 84 חברות גדולות. כ-40,400 משרות.',
+            desc: 'מוקד התעסוקה של הפרברים הצפוניים - Town Center ו-Hughes Landing: מטות Chevron Phillips Chemical ו-Huntsman ועוד 84 חברות גדולות. כ-40,400 עובדים.',
             type: 'מרכז עסקים'
         },
         // ---- tier 2: local anchors (revealed at zoom >= 10) ----
@@ -1047,7 +1048,7 @@
             tier: 2,
             labelSide: 'below',
             jobsLabel: '~2,600 עובדים',
-            desc: 'המטה העולמי של Hewlett Packard Enterprise - עבר מסיליקון ואלי ב-2022. קמפוס 440,000 רגל רבוע ב-Springwoods Village, שכן של קמפוס ExxonMobil.',
+            desc: 'המטה העולמי של Hewlett Packard Enterprise - עבר מסיליקון ואלי ב-2022. קמפוס 440,000 רגל רבועה ב-Springwoods Village, שכן של קמפוס ExxonMobil.',
             type: 'טכנולוגיה'
         },
         {
@@ -1071,7 +1072,7 @@
             lng: -95.1678,
             tier: 2,
             jobsLabel: 'צומח - Eli Lilly',
-            desc: 'פארק עסקים מתוכנן על 4,300 דונם: קמפוס TechnipFMC (~1,800 עובדים), קולג\'ים, ומפעל התרופות של Eli Lilly בהקמה ($6.5B, 615 משרות ישירות בשכר גבוה). יעד היזם: עד 150,000 משרות בבנייה מלאה.',
+            desc: 'פארק עסקים מתוכנן על 4,300 אקר: קמפוס TechnipFMC (~1,800 עובדים), קולג\'ים, ומפעל התרופות של Eli Lilly בהקמה ($6.5B, 615 משרות ישירות בשכר גבוה). יעד היזם: עד 150,000 משרות בבנייה מלאה.',
             type: 'עסקים ותעשייה'
         },
         {
@@ -1117,7 +1118,7 @@
             lng: -95.6959,
             tier: 2,
             jobsLabel: '~16,400 עובדים',
-            desc: 'מחוז בתי הספר השלישי בגודלו בטקסס + קולג\' Lone Star CyFair - מעסיק הענק של מסדרון 290.',
+            desc: 'מחוז בתי הספר השלישי בגודלו בטקסס + קולג\' Lone Star CyFair - המעסיק הגדול של מסדרון US-290.',
             type: 'ציבורי'
         },
         {
@@ -1152,8 +1153,8 @@
             lat: 29.727,
             lng: -94.895,
             tier: 2,
-            jobsLabel: 'אלפי משרות',
-            desc: 'מפארקי התעשייה משורתי-הרכבת הגדולים בארה"ב (15,000 דונם) - מחסני ענק של Walmart, IKEA ועוד. אלפי משרות לוגיסטיקה.',
+            jobsLabel: 'אלפי עובדים',
+            desc: 'מפארקי התעשייה הגדולים בארה"ב עם חיבור רכבת (15,000 אקר) - מחסני ענק של Walmart, IKEA ועוד. אלפי עובדים בלוגיסטיקה.',
             type: 'לוגיסטיקה'
         },
         {
@@ -1164,7 +1165,7 @@
             lng: -94.9328,
             tier: 2,
             jobsLabel: '~1,550 + אלפי קבלנים',
-            desc: 'בית הזיקוק Galveston Bay בטקסס סיטי - מהגדולים בארה"ב (593 אלף חביות ביום). כ-1,550 עובדים ישירים + אלפי קבלנים יומיים. 10 דקות מלאגו מאר.',
+            desc: 'בית הזיקוק Galveston Bay בטקסס סיטי - מהגדולים בארה"ב (593 אלף חביות ביום). כ-1,550 עובדים ישירים + אלפי עובדי קבלן מדי יום. 10 דקות מלאגו מאר.',
             type: 'אנרגיה'
         },
         {
@@ -1177,7 +1178,7 @@
             tier: 2,
             labelSide: 'below',
             jobsLabel: '~10,000 עובדים',
-            desc: 'University of Texas Medical Branch בגלבסטון - המעסיק הגדול ביותר באזור המפרץ: כ-9,900 עובדים בגלבסטון (~13,000 בכל הקמפוסים).',
+            desc: 'University of Texas Medical Branch בגלווסטון - המעסיק הגדול ביותר באזור המפרץ: כ-9,900 עובדים בגלווסטון (~13,000 בכל הקמפוסים).',
             type: 'רפואה'
         },
         {
@@ -1189,7 +1190,7 @@
             tier: 2,
             status: 'בהקמה',
             jobsLabel: '2,400+ משרות מתוכננות',
-            desc: 'מספנת שוברות הקרח של Davie בפליקן איילנד (גלבסטון) - השקעה של כ-$1 מיליארד, אבן פינה יוני 2026. מעל 2,400 משרות מתוכננות.',
+            desc: 'מספנת שוברות הקרח של Davie בפליקן איילנד (גלווסטון) - השקעה של כ-$1 מיליארד, אבן הפינה הונחה ביוני 2026. מעל 2,400 משרות מתוכננות.',
             type: 'תעשייה ביטחונית'
         },
     ];
@@ -1203,8 +1204,8 @@
             lat: 29.936,
             lng: -95.719,
             status: 'בתכנון · פתיחה 2029',
-            cost: '$34B השפעה כלכלית',
-            desc: 'מטה עולמי חדש של Houston Texans על 83 אקר ב-Bridgeland. כולל מתחם אימונים מקורה לכ-16,000 צופים, 3 מגרשי אימון NFL, קמעונאות, מלונות ובילוי. 17,000 משרות חדשות. שותפות עם Harris County ו-Howard Hughes.',
+            cost: 'השפעה כלכלית חזויה: $34B',
+            desc: 'מטה עולמי חדש של Houston Texans על 83 אקר ב-Bridgeland. כולל מתחם אימונים מקורה לכ-16,000 צופים, 3 מגרשי אימון NFL, קמעונאות, מלונות ובילוי. לפי הודעת הפרויקט: כ-17,000 משרות חדשות. שותפות עם Harris County ו-Howard Hughes.',
             highlights: ['מתחם אימונים מקורה 150,000 sqft', '175,000 sqft משרדים', '61 אקר מסחרי', '6 פארקים + 5,000 חניות']
         },
         {
@@ -1216,7 +1217,7 @@
             status: 'בבנייה · שלב 1 נפתח 2028',
             cost: '$2B · $20B השפעה ב-30 שנה',
             desc: 'הרחבת מרכז הכנסים George R. Brown ב-700,000 sqft. אולם האירועים הגדול בטקסס, פלאזה 100,000 sqft, קמעונאות ומסעדות. 60 בלוקים של פיתוח מעורב - מגורים, מלונות, בילוי. קו רכבת קלה עתידי. יוסטון אירחה 7 משחקי מונדיאל ביוני-יולי 2026.',
-            highlights: ['700,000 sqft הרחבה', 'האולם הגדול בטקסס', 'אירחה מונדיאל 2026 · RNC 2028', 'קו מטרו חדש מזרח-מערב']
+            highlights: ['700,000 sqft הרחבה', 'האולם הגדול בטקסס', 'אירחה משחקי מונדיאל 2026', 'קו מטרו חדש מזרח-מערב']
         }
     ];
 
@@ -1250,6 +1251,13 @@
 
     streetLayer.addTo(map);
     let currentLayer = 'street';
+
+    // Keep clicks on in-map UI (controls, search, hint) from reaching the map itself
+    // (otherwise Street View mode fires on every control click)
+    ['.map-controls', '.search-container', '#searchResults', '#svBtn', '#welcomeHint'].forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) L.DomEvent.disableClickPropagation(el);
+    });
 
     function setLayer(type) {
         gtag('event', 'map_layer_switch', { layer_type: type });
@@ -1347,6 +1355,15 @@
         buildDriveLine(c).addTo(driveLayer);
     });
 
+    // A single temp drive line follows the open community popup while the distance layer is off
+    let openDriveCommunity = null;
+    let tempDriveLine = null;
+    function syncTempDriveLine() {
+        const wantTemp = openDriveCommunity && !document.getElementById('lyr-drive').checked;
+        if (tempDriveLine) { map.removeLayer(tempDriveLine); tempDriveLine = null; }
+        if (wantTemp) tempDriveLine = buildDriveLine(openDriveCommunity).addTo(map);
+    }
+
     // ========== COMMUNITY MARKERS ==========
     function createCommunityIcon(color) {
         return L.divIcon({
@@ -1385,7 +1402,7 @@
                 <div class="popup-body">
                     <p>${c.description}</p>
                     <div class="info-row"><span class="label">שכונות</span><span class="value">${c.communities}</span></div>
-                    <div class="info-row"><span class="label">טווח מחירים</span><span class="value">${c.priceRange}</span></div>
+                    <div class="info-row"><span class="label">טווח מחירים</span><span class="value" dir="ltr">${c.priceRange}</span></div>
                     <div class="info-row"><span class="label">מחוז בתי ספר</span><span class="value">${c.schoolDistrict}</span></div>
                     <div class="info-row"><span class="label">נקודות עניין</span><span class="value">${c.highlights.join(', ')}</span></div>
                     ${jobsHtml}
@@ -1403,16 +1420,9 @@
         });
 
         // While a community popup is open, show its drive-to-downtown line
-        // (even when the distance layer is switched off)
-        let tempLine = null;
-        marker.on('popupopen', () => {
-            if (!document.getElementById('lyr-drive').checked) {
-                tempLine = buildDriveLine(c).addTo(map);
-            }
-        });
-        marker.on('popupclose', () => {
-            if (tempLine) { map.removeLayer(tempLine); tempLine = null; }
-        });
+        // (even when the distance layer is switched off; syncTempDriveLine reconciles with the toggle)
+        marker.on('popupopen', () => { openDriveCommunity = c; syncTempDriveLine(); });
+        marker.on('popupclose', () => { openDriveCommunity = null; syncTempDriveLine(); });
 
         // Community name label - anchored in pixels so it hugs the marker at every zoom level
         L.marker([c.lat, c.lng], {
@@ -1460,6 +1470,7 @@
 
         // Create mini satellite map
         setTimeout(() => {
+            if (aerialMap) return;
             aerialMap = L.map('aerial-map', {
                 center: [aLat, aLng],
                 zoom: c.aerialZoom,
@@ -1617,7 +1628,7 @@
                     <div class="sub">${fd.nameHe}</div>
                 </div>
                 <div class="popup-body">
-                    <div style="margin-bottom:8px"><strong>${fd.status}</strong> · ${fd.cost}</div>
+                    <div style="margin-bottom:8px;direction:rtl;text-align:right"><strong>${fd.status}</strong> · ${fd.cost}</div>
                     <p>${fd.desc}</p>
                     <div style="margin-top:8px">${fd.highlights.map(h => `<span style="display:inline-block;background:#8e44ad22;color:#8e44ad;padding:2px 8px;border-radius:10px;font-size:11px;margin:2px">${h}</span>`).join('')}</div>
                 </div>
@@ -1653,6 +1664,7 @@
         setGroup(employersT2, emp && zoomedIn);
         setGroup(empLabelsLow, emp && !zoomedIn);
         setGroup(empLabelsHi, emp && zoomedIn);
+        syncTempDriveLine();
         if (fromUser !== false) {
             gtag('event', 'layers_change', {
                 communities: on('lyr-communities'), employers: emp,
@@ -1817,7 +1829,7 @@
             resultsEl.innerHTML = data.map((item, i) => {
                 const name = item.display_name.split(',').slice(0, 3).join(', ');
                 const type = item.type || '';
-                return `<div class="search-result-item" onclick="goToResult(${item.lat}, ${item.lon}, '${item.display_name.replace(/'/g, "\\'")}')">
+                return `<div class="search-result-item" onclick="goToResult(${item.lat}, ${item.lon}, '${item.display_name.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">
                     <span class="result-icon">📍</span>
                     <div class="result-text">
                         <div class="result-name">${name}</div>
