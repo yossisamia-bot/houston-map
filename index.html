@@ -139,10 +139,13 @@
             font-weight: 600;
             white-space: nowrap;
             border: 1px solid rgba(255,255,255,0.2);
+            direction: rtl;
+            text-align: center;
         }
 
-        /* Community name labels */
+        /* Community name labels - clickable, open the community popup */
         .community-label {
+            cursor: pointer;
             background: none;
             border: none;
             color: #fff;
@@ -153,20 +156,20 @@
             letter-spacing: 1px;
         }
 
-        /* Employer name labels */
+        /* Employer name labels - clickable, open the same popup as the marker */
         .employer-label {
             background: rgba(230, 126, 34, 0.92);
             border: none;
             color: #fff;
-            font-size: 11px;
+            font-size: 12.5px;
             font-weight: 700;
             white-space: normal;
             text-align: center;
-            padding: 3px 6px;
+            padding: 2px 5px;
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            line-height: 1.2;
-            pointer-events: none;
+            line-height: 1.15;
+            cursor: pointer;
         }
 
         /* Ring labels */
@@ -205,8 +208,10 @@
         .map-btn:hover { background: rgba(40, 40, 70, 0.9); color: #fff; }
         .map-btn.active { background: #e94560; color: #fff; border-color: #e94560; }
 
-        /* Layers panel - what is shown on the map */
-        #layersToggleBtn { display: none; }
+        /* Layers panel - what is shown on the map; collapses behind the button,
+           auto-closes when a popup opens so it never hides content */
+        .layers-panel { display: none; }
+        .layers-panel.open { display: block; }
         .layers-panel {
             background: rgba(26, 26, 46, 0.92);
             border: 1px solid rgba(255,255,255,0.15);
@@ -640,10 +645,8 @@
             .map-btn { padding: 5px 10px; font-size: 11px; }
             .map-controls { top: 8px; right: 8px; gap: 4px; }
 
-            /* Layers panel collapses behind a button on mobile */
-            #layersToggleBtn { display: inline-block; }
-            .layers-panel { display: none; }
-            .layers-panel.open { display: block; }
+            /* Map labels - employer boxes slightly smaller on mobile */
+            .employer-label { font-size: 10.5px; }
 
             /* Aerial modal */
             .aerial-modal { width: 95vw; }
@@ -676,15 +679,14 @@
                 <div class="lp-title">מה מוצג במפה</div>
                 <label><input type="checkbox" id="lyr-communities" checked onchange="applyLayers()"> 🏘️ קהילות להשקעה</label>
                 <label><input type="checkbox" id="lyr-employers" checked onchange="applyLayers()"> 💼 מרכזי תעסוקה</label>
-                <label><input type="checkbox" id="lyr-future" checked onchange="applyLayers()"> 🏗️ פרויקטים עתידיים</label>
                 <label><input type="checkbox" id="lyr-drive" onchange="applyLayers()"> 🚗 זמן נסיעה ממרכז יוסטון</label>
-                <div class="lp-hint">💡 מתקרבים במפה - נחשפים מעסיקים ופרויקטים נוספים</div>
+                <div class="lp-hint">💡 מתקרבים במפה - נחשפים מעסיקים נוספים</div>
             </div>
         </div>
 
         <!-- First-visit hint -->
         <div id="welcomeHint">
-            <span>🖱️ כל נקודה במפה נפתחת בלחיצה - קהילות להשקעה, מעסיקים גדולים ופרויקטים עתידיים</span>
+            <span>🖱️ כל נקודה או שם במפה נפתחים בלחיצה - קהילות להשקעה ומרכזי תעסוקה גדולים</span>
             <button onclick="dismissWelcome()" title="סגור">&times;</button>
         </div>
 
@@ -1282,9 +1284,8 @@
     const communitiesLayer = L.layerGroup();
     const employersT1 = L.layerGroup();   // metro flagships - always shown when employers layer is on
     const employersT2 = L.layerGroup();   // local anchors - shown at zoom >= 10
-    const futureLayer = L.layerGroup();
     const driveLayer = L.layerGroup();    // distance rings + drive-time lines (off by default)
-    const T2_MIN_ZOOM = 10;
+    const T2_MIN_ZOOM = 11;   // local anchors reveal only when the user zooms past the metro overview
 
     // ========== HOUSTON DISTANCE RINGS (into driveLayer) ==========
     const ringDistances = [
@@ -1424,7 +1425,8 @@
         marker.on('popupopen', () => { openDriveCommunity = c; syncTempDriveLine(); });
         marker.on('popupclose', () => { openDriveCommunity = null; syncTempDriveLine(); });
 
-        // Community name label - anchored in pixels so it hugs the marker at every zoom level
+        // Community name label - anchored in pixels so it hugs the marker at every zoom
+        // level; clickable so tapping the name opens the same popup as the pin
         L.marker([c.lat, c.lng], {
             icon: L.divIcon({
                 className: 'community-label',
@@ -1432,8 +1434,9 @@
                 iconSize: [200, 30],
                 iconAnchor: [100, 50]
             }),
-            interactive: false
-        }).addTo(communitiesLayer);
+            interactive: true,
+            keyboard: false
+        }).addTo(communitiesLayer).on('click', () => marker.openPopup());
 
         // Subtle circle around community
         L.circle([c.lat, c.lng], {
@@ -1546,23 +1549,31 @@
     const empLabelsLow = L.layerGroup();   // tier-1 compact labels, zoom < T2_MIN_ZOOM
     const empLabelsHi = L.layerGroup();    // tier-1 full labels, zoom >= T2_MIN_ZOOM
 
-    // Pixel-anchored label that hugs its marker at every zoom; side 'above' | 'below'
-    function makeEmployerLabel(emp, markerSize, full) {
-        const w = 110, h = full ? 38 : 20, gap = 4;
+    // Pixel-anchored label that hugs its marker at every zoom; side 'above' | 'below'.
+    // The label is clickable and opens the same popup as the pin, so clicking the
+    // company NAME works exactly like clicking its icon.
+    function makeEmployerLabel(emp, markerSize, full, pinMarker) {
+        const w = 120, h = full ? 40 : 22, gap = 4;
         const side = emp.labelSide === 'below' ? 'below' : 'above';
         const anchorY = side === 'above' ? (h + markerSize / 2 + gap) : -(markerSize / 2 + gap);
         const html = full
-            ? `${emp.name}<br><span style="font-size:9px;font-weight:400;opacity:0.85">${emp.status ? '🚧 ' : ''}${emp.jobsLabel}</span>`
-            : `<span style="font-size:10px">${emp.status ? '🚧 ' : ''}${emp.name}</span>`;
-        return L.marker([emp.lat, emp.lng], {
+            ? `${emp.name}<br><span style="font-size:10px;font-weight:400;opacity:0.9">${emp.status ? '🚧 ' : ''}${emp.jobsLabel}</span>`
+            : `<span style="font-size:11.5px">${emp.status ? '🚧 ' : ''}${emp.name}</span>`;
+        const lbl = L.marker([emp.lat, emp.lng], {
             icon: L.divIcon({
                 className: 'employer-label',
                 html: html,
                 iconSize: [w, h],
                 iconAnchor: [w / 2, anchorY]
             }),
-            interactive: false
+            interactive: true,
+            keyboard: false
         });
+        lbl.on('click', () => {
+            gtag('event', 'employer_click', { employer_name: emp.name, employer_type: emp.type, via: 'label' });
+            pinMarker.openPopup();
+        });
+        return lbl;
     }
 
     employers.forEach(emp => {
@@ -1570,7 +1581,7 @@
         const size = emp.tier === 1 ? 40 : 32;
         const statusBadge = emp.status ? `<span class="status-badge">🚧 ${emp.status}</span>` : '';
 
-        L.marker([emp.lat, emp.lng], { icon: createEmployerIcon(emp) })
+        const pin = L.marker([emp.lat, emp.lng], { icon: createEmployerIcon(emp) })
             .addTo(group)
             .bindPopup(`
                 <div class="popup-header" style="background:linear-gradient(135deg, #e67e22, #d35400);">
@@ -1583,7 +1594,7 @@
                 </div>
             `, { maxWidth: 300 })
             .on('click', () => {
-                gtag('event', 'employer_click', { employer_name: emp.name, employer_type: emp.type });
+                gtag('event', 'employer_click', { employer_name: emp.name, employer_type: emp.type, via: 'pin' });
             });
 
         // Districts (Energy Corridor, Ship Channel) get a soft area circle - they are zones, not a single site
@@ -1601,50 +1612,15 @@
         }
 
         if (emp.tier === 1) {
-            makeEmployerLabel(emp, size, false).addTo(empLabelsLow);
-            makeEmployerLabel(emp, size, true).addTo(empLabelsHi);
+            makeEmployerLabel(emp, size, false, pin).addTo(empLabelsLow);
+            makeEmployerLabel(emp, size, true, pin).addTo(empLabelsHi);
         } else {
-            makeEmployerLabel(emp, size, true).addTo(group);
+            makeEmployerLabel(emp, size, true, pin).addTo(group);
         }
     });
 
-    // ========== MAP - FUTURE DEVELOPMENTS ==========
-    // markers of stand-alone projects always show (when the layer is on);
-    // labels + downtown projects (which overlap the Downtown pin) appear from zoom >= 10
-    const futureDetail = L.layerGroup();
-    futureDevelopments.forEach(fd => {
-        const fdIcon = L.divIcon({
-            className: 'employer-icon',
-            html: `<div style="font-size:22px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));animation:pulse 2s infinite">${fd.icon}</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
-        });
-        const markerGroup = (fd.name === 'Convention District') ? futureDetail : futureLayer;
-        L.marker([fd.lat, fd.lng], { icon: fdIcon })
-            .addTo(markerGroup)
-            .bindPopup(`
-                <div class="popup-header" style="background:linear-gradient(135deg, #8e44ad, #6c3483);">
-                    <h3>${fd.icon} ${fd.name} <span class="status-badge" style="background:#8e44ad">עתידי</span></h3>
-                    <div class="sub">${fd.nameHe}</div>
-                </div>
-                <div class="popup-body">
-                    <div style="margin-bottom:8px;direction:rtl;text-align:right"><strong>${fd.status}</strong> · ${fd.cost}</div>
-                    <p>${fd.desc}</p>
-                    <div style="margin-top:8px">${fd.highlights.map(h => `<span style="display:inline-block;background:#8e44ad22;color:#8e44ad;padding:2px 8px;border-radius:10px;font-size:11px;margin:2px">${h}</span>`).join('')}</div>
-                </div>
-            `, { maxWidth: 350 });
-
-        // Label below the marker (pixel-anchored, click-through) - only from zoom >= 10
-        L.marker([fd.lat, fd.lng], {
-            icon: L.divIcon({
-                className: 'employer-label',
-                html: `<div style="white-space:nowrap;font-size:12px;font-weight:700;color:#8e44ad;text-shadow:1px 1px 3px #fff,-1px -1px 3px #fff,1px -1px 3px #fff,-1px 1px 3px #fff;pointer-events:none">${fd.name}<br><span style="font-size:10px;font-weight:400;opacity:0.85">${fd.status.split('·')[0].trim()}</span></div>`,
-                iconSize: [120, 30],
-                iconAnchor: [60, -14]
-            }),
-            interactive: false
-        }).addTo(futureDetail);
-    });
+    // Future developments (Toro District, GRB expansion) intentionally omitted from
+    // the map: they read as "our projects" and add no jobs signal the client needs.
 
     // ========== LAYERS PANEL LOGIC ==========
     function setGroup(group, show) {
@@ -1656,8 +1632,6 @@
         const on = id => document.getElementById(id).checked;
         const zoomedIn = map.getZoom() >= T2_MIN_ZOOM;
         setGroup(communitiesLayer, on('lyr-communities'));
-        setGroup(futureLayer, on('lyr-future'));
-        setGroup(futureDetail, on('lyr-future') && zoomedIn);
         setGroup(driveLayer, on('lyr-drive'));
         const emp = on('lyr-employers');
         setGroup(employersT1, emp);
@@ -1668,7 +1642,7 @@
         if (fromUser !== false) {
             gtag('event', 'layers_change', {
                 communities: on('lyr-communities'), employers: emp,
-                future: on('lyr-future'), drive: on('lyr-drive'), zoom: map.getZoom()
+                drive: on('lyr-drive'), zoom: map.getZoom()
             });
         }
     }
@@ -1677,8 +1651,16 @@
     applyLayers(false);
 
     function toggleLayersPanel() {
-        document.getElementById('layersPanel').classList.toggle('open');
+        const p = document.getElementById('layersPanel');
+        p.classList.toggle('open');
+        document.getElementById('layersToggleBtn').classList.toggle('active', p.classList.contains('open'));
     }
+    function closeLayersPanel() {
+        document.getElementById('layersPanel').classList.remove('open');
+        document.getElementById('layersToggleBtn').classList.remove('active');
+    }
+    // Any popup opening closes the panel so it never covers a community/employer card
+    map.on('popupopen', closeLayersPanel);
 
     // ========== FIRST-VISIT HINT ==========
     function dismissWelcome() {
