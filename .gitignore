@@ -3,3 +3,6 @@
 
 # Junk file created by an accidental shell redirect to the Windows 'nul' device
 nul
+
+# Internal research notes - must NOT be published to the public GitHub Pages site
+research/
