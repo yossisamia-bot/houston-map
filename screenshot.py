@@ -1,4 +1,4 @@
-"""Clean client-ready screenshot of the Houston communities map.
+r"""Clean client-ready screenshot of the Houston communities map.
 
 Usage:
     python screenshot.py                 -> screenshots\houston-communities-<date>.png
